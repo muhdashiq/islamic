@@ -93,3 +93,19 @@ npm run test:pages
 The Pages browser test uses an isolated Chrome profile on port 4174 to verify assets, catalog requests, install scope and offline reload under `/islamic/`. Ordinary `npm run build` still targets the origin root for local development and other hosting.
 
 The previous Sites identity remains in `.openai/hosting.json`; this GitHub Pages workflow does not use it.
+
+## Comfortable reading
+
+Settings → Reading comfort offers Standard, Large (default), and Extra large app text. Interface type uses relative units and a readable minimum, so labels and instructions grow with that choice. The Arabic reading size is independently adjustable from 22 to 64 pixels, with a live preview and large minus/plus controls. Both settings are saved per device, work offline, and apply to all four languages. Existing saved Arabic-size choices are retained. Fresh installations start with 34-pixel Arabic text.
+
+## Recitation and offline audio
+
+Ayatul Kursi includes Mishary Rashid Alafasy’s matching EveryAyah `Alafasy_128kbps/002255.mp3` recording. Playback starts only after a user gesture. The first play streams immediately and downloads a complete copy in the background; the download button can save it without playing. Only a complete, validated audio response is committed to IndexedDB (`adkar-media`), separate from application caches and progress. Recordings survive application/service-worker upgrades. A saved recording is played from a local Blob URL after reload, including offline. The player can remove it explicitly. Storage failures retain online playback and offer a retry; a failed or cancelled download is never marked saved. As with other browser storage, clearing site data or browser eviction can remove a recording.
+
+The player offers play/pause, seeking, restart, pitch-preserving 0.5–2× speed, verse repeat, and volume/mute on devices with software volume control. Touch devices use physical volume buttons. Media Session integration exposes supported lock-screen/headset controls. Playback and downloads stop when leaving the verse; object URLs, listeners and animation frames are cleaned up. Listening does not increment the personal recitation count. Application-update reloads wait while audio is playing or downloading, as well as while editing.
+
+Word highlighting uses media time rather than wall time, so seeking and speed changes remain synchronized. Arabic pause marks do not consume word indexes. Silence is not assigned an invented highlight, and ordinary text remains selectable with no extra per-word keyboard stops. The meaning view keeps the controls available and explains how to follow the Arabic words.
+
+The 50 published timing segments are taken directly from Collin Fair’s [quran-align release of 24 November 2016](https://github.com/cpfair/quran-align/releases/tag/release-2016-11-24), `Alafasy_128kbps.json`, verse 2:255. This timing data is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); the complete license is included in `public/licenses/quran-align.txt`, and attribution is accessible from the player’s more-controls panel. The segments are unmodified. The recording is downloaded directly from [EveryAyah](https://everyayah.com/) on user request; audio binaries are not committed or bundled into the app.
+
+Future built-in entries can add optional `recitation` metadata: stable versioned `id`, localized `reciter`, HTTPS `url`, optional `bytes`, `source`, `timingSource`, and `segments` tuples `[first_word_index, after_last_word_index, start_ms, end_ms]`. Word indexes are zero-based and the end is exclusive. The content schema rejects overlapping timestamps and indexes beyond the verse’s actual words. Increment the catalog version when content changes and update the recitation ID/URL if the recording or timing set changes.

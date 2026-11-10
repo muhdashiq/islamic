@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { version } from '../../package.json';
+import { ReadingPreferences } from './ReadingPreferences';
 import {
   ArrowDownToLine,
   Check,
@@ -69,6 +71,7 @@ export function Settings({
       </div>
       <div className="settings-layout">
         <div>
+          <ReadingPreferences state={state} t={t} />
           <section className="settings-group" aria-labelledby="appearance-heading">
             <h2 id="appearance-heading">{t('appearance')}</h2>
             <div className="settings-surface appearance-surface">
@@ -225,7 +228,7 @@ export function Settings({
             </div>
           </section>
           <p className="version">
-            ADKAR <span>·</span> {t('version')} 2.0.0
+            ADKAR <span>·</span> {t('version')} {version}
           </p>
         </div>
         <aside className="settings-aside">

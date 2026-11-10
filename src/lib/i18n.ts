@@ -1,7 +1,11 @@
 import { translations } from './translations';
+import { audioTranslations } from './audio-translations';
+import { readingTranslations } from './reading-translations';
 import type { Language } from './schema';
 
 const en = {
+  ...audioTranslations.en,
+  ...readingTranslations.en,
   today: 'Today',
   library: 'Library',
   settings: 'Settings',
@@ -268,9 +272,30 @@ export type TranslationKey = keyof typeof en;
 export type Translate = (key: TranslationKey) => string;
 const dictionaries: Record<Language, Record<TranslationKey, string>> = {
   en,
-  ml: { ...en, ...translations.ml, ...extra.ml, today: 'ഇന്ന്' },
-  hi: { ...en, ...translations.hi, ...extra.hi, today: 'आज' },
-  ar: { ...en, ...translations.ar, ...extra.ar, today: 'اليوم' },
+  ml: {
+    ...en,
+    ...translations.ml,
+    ...extra.ml,
+    ...audioTranslations.ml,
+    ...readingTranslations.ml,
+    today: 'ഇന്ന്',
+  },
+  hi: {
+    ...en,
+    ...translations.hi,
+    ...extra.hi,
+    ...audioTranslations.hi,
+    ...readingTranslations.hi,
+    today: 'आज',
+  },
+  ar: {
+    ...en,
+    ...translations.ar,
+    ...extra.ar,
+    ...audioTranslations.ar,
+    ...readingTranslations.ar,
+    today: 'اليوم',
+  },
 };
 export const languageNames: Record<Language, string> = {
   en: 'English',

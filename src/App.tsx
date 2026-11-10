@@ -42,6 +42,9 @@ export default function App() {
   const saveFailed = useSaveFailed();
   const t = useMemo(() => translator(state.lang), [state.lang]);
   useTheme(state.theme);
+  useEffect(() => {
+    document.documentElement.dataset.textSize = state.interfaceSize;
+  }, [state.interfaceSize]);
   const day = useDay();
   const pwa = usePwa();
   const { catalog, status, refresh } = useCatalog(pwa.online, pwa.update);

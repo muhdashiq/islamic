@@ -19,6 +19,11 @@
         const saved = JSON.parse(localStorage.getItem('adkar-state') || '{}');
         const theme = ['light', 'dark'].includes(saved.theme) ? saved.theme : 'system';
         document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.textSize = ['standard', 'large', 'extra-large'].includes(
+          saved.interfaceSize,
+        )
+          ? saved.interfaceSize
+          : 'large';
         const dark =
           theme === 'dark' ||
           (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);

@@ -26,7 +26,12 @@ export function usePwa() {
         focused instanceof HTMLInputElement ||
         focused instanceof HTMLTextAreaElement ||
         focused instanceof HTMLSelectElement;
-      if (reloadRequested && !editing && !document.querySelector('dialog[open]'))
+      if (
+        reloadRequested &&
+        !editing &&
+        !document.querySelector('dialog[open]') &&
+        !document.querySelector('audio[data-busy="true"]')
+      )
         window.location.reload();
     };
     const afterInteraction = () => {
@@ -35,6 +40,7 @@ export function usePwa() {
     };
     document.addEventListener('focusout', afterInteraction);
     document.addEventListener('close', afterInteraction, true);
+    document.addEventListener('adkar-audio-idle', afterInteraction);
     const onOnline = () => setOnline(navigator.onLine);
     const beforeInstall = (event: Event) => {
       event.preventDefault();
@@ -74,6 +80,7 @@ export function usePwa() {
       clearTimeout(reloadTimer);
       document.removeEventListener('focusout', afterInteraction);
       document.removeEventListener('close', afterInteraction, true);
+      document.removeEventListener('adkar-audio-idle', afterInteraction);
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOnline);
       window.removeEventListener('beforeinstallprompt', beforeInstall);

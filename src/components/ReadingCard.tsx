@@ -13,6 +13,9 @@ import type { Translate } from '../lib/i18n';
 import { countFor, increment, setCount } from '../lib/model';
 import { updateState } from '../lib/store';
 import { useState } from 'react';
+import { AudioPlayer } from './AudioPlayer';
+import { useVerseAudio } from '../hooks/useVerseAudio';
+import { arabicWords } from '../lib/audio';
 interface Props {
   entry: Entry;
   state: AppState;
@@ -23,10 +26,13 @@ interface Props {
 export function ReadingCard({ entry, state, day, t, onToast }: Props) {
   const [meaning, setMeaning] = useState(state.defaultMeaning);
   const custom = entry.id.startsWith('custom-');
+  const audio = useVerseAudio(entry.recitation, state);
+  const words = arabicWords(entry.arabic);
+  const segment = entry.recitation?.segments[audio.activeSegment];
   const count = countFor(state, entry.id, day);
   const isSaved = state.bookmarks.includes(entry.id);
   function changeSize(delta: number) {
-    updateState((s) => ({ ...s, fontSize: Math.max(22, Math.min(44, s.fontSize + delta)) }));
+    updateState((s) => ({ ...s, fontSize: Math.max(22, Math.min(64, s.fontSize + delta)) }));
   }
   function bookmark() {
     updateState((s) => ({
@@ -92,7 +98,7 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           <button
             className="icon-button"
             aria-label={t('larger')}
-            disabled={state.fontSize >= 44}
+            disabled={state.fontSize >= 64}
             onClick={() => changeSize(2)}
           >
             <span className="font-a">A</span>
@@ -100,6 +106,18 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           </button>
         </div>
       </div>
+      {entry.recitation && (
+        <AudioPlayer
+          audio={audio}
+          recitation={entry.recitation}
+          title={entry.title[state.lang] || entry.title.en}
+          state={state}
+          t={t}
+        />
+      )}
+      {meaning && entry.recitation && audio.playing && (
+        <p className="audio-meaning-hint">{t('audioArabicHint')}</p>
+      )}
       <div className="verse-body">
         {!meaning && !custom && (
           <div className="bismillah" dir="rtl" lang="ar">
@@ -116,7 +134,24 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
               : `${state.fontSize}px`,
           }}
         >
-          {meaning ? meaningText || t('noMeaning') : entry.arabic}
+          {meaning
+            ? meaningText || t('noMeaning')
+            : entry.recitation
+              ? words.map((word, index) => (
+                  <span key={index}>
+                    <span
+                      className={`verse-word ${segment && index >= segment[0] && index < segment[1] ? 'is-current' : ''}`}
+                      aria-current={
+                        segment && index >= segment[0] && index < segment[1] ? 'true' : undefined
+                      }
+                      data-word={index}
+                    >
+                      {word}
+                    </span>
+                    {index < words.length - 1 ? ' ' : ''}
+                  </span>
+                ))
+              : entry.arabic}
         </div>
         {meaning ? (
           <p className="meaning-note">{t('meaningNote')}</p>
