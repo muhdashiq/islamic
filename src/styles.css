@@ -2883,3 +2883,106 @@ footer > span > span {
     max-width: 150px;
   }
 }
+
+/* Keep the daily reading and controls close together without shrinking touch targets. */
+main {
+  padding-top: 28px;
+}
+.page-heading {
+  margin-bottom: 22px;
+}
+.page-heading h1 {
+  margin-top: 9px;
+}
+.page-heading p {
+  margin-top: 7px;
+}
+.today-grid {
+  gap: 16px 20px;
+}
+.reading-title-row {
+  padding-block: 20px 17px;
+}
+.reading-title-row h2 {
+  margin-top: 8px;
+}
+.subtitle {
+  margin-top: 5px;
+}
+.audio-player {
+  margin-top: 14px;
+  padding-block: 12px;
+}
+.audio-heading {
+  margin-bottom: 8px;
+}
+.audio-options {
+  margin-top: 5px;
+}
+.verse-body {
+  padding-top: 18px;
+  padding-bottom: 8px;
+}
+.bismillah {
+  margin-bottom: 12px;
+}
+.verse-flourish {
+  margin-top: 10px;
+}
+.source-row {
+  padding-bottom: 14px;
+}
+.recitation-bar {
+  padding-block: 15px;
+}
+.progress-ring {
+  margin-block: 14px;
+}
+.quote-card {
+  padding-block: 18px;
+}
+.quote-card blockquote {
+  margin-block: 10px 14px;
+}
+.gentle-note {
+  margin-block: 18px;
+}
+.settings-group {
+  margin-bottom: 22px;
+}
+@media (max-width: 680px) {
+  main {
+    padding-top: 18px;
+  }
+  .page-heading {
+    margin-bottom: 16px;
+  }
+  .page-heading h1 {
+    margin-top: 8px;
+  }
+  .page-heading p {
+    margin-top: 6px;
+  }
+  .today-grid {
+    gap: 12px;
+  }
+  .progress-card {
+    padding-block: 12px;
+  }
+  .reading-title-row {
+    padding-block: 17px 14px;
+  }
+  .audio-player {
+    margin-top: 12px;
+    padding-block: 10px;
+  }
+  .audio-heading {
+    margin-bottom: 7px;
+  }
+  .verse-body {
+    padding-top: 16px;
+  }
+  .quote-card {
+    padding-block: 18px;
+  }
+}
