@@ -11,7 +11,7 @@ test('GitHub Pages subpath supports assets, catalog, installation and offline re
     if (url.hostname === 'localhost' && response.status() >= 400) failures.push(url.pathname);
   });
   page.on('request', (request) => requestedPaths.push(new URL(request.url()).pathname));
-  await page.goto('./');
+  await page.goto('./#recitation/ayatul-kursi');
   await expect(page.getByRole('heading', { name: 'Ayatul Kursi' })).toBeVisible();
   await expect(page.locator('.sidebar-offline')).toContainText('Available offline');
   await page.waitForFunction(() => !!navigator.serviceWorker.controller);

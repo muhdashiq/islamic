@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookOpen,
   Check,
@@ -21,11 +21,16 @@ import { useDay } from './hooks/useDay';
 import { usePwa } from './hooks/usePwa';
 import { useCatalog } from './hooks/useCatalog';
 import { Today } from './components/Today';
+import { useReminders } from './hooks/useReminders';
 import { Library } from './components/Library';
 import { Settings } from './components/Settings';
 import { AddEntry } from './components/AddEntry';
 import { Dialog } from './components/Dialog';
 import { Toast, useToast } from './components/Toast';
+
+const Tracker = lazy(() =>
+  import('./components/Tracker').then((module) => ({ default: module.Tracker })),
+);
 
 type View = 'today' | 'library' | 'settings';
 const tabs = [
@@ -39,6 +44,7 @@ function readView(): View {
 }
 export default function App() {
   const state = useAppState();
+  useReminders();
   const saveFailed = useSaveFailed();
   const t = useMemo(() => translator(state.lang), [state.lang]);
   useTheme(state.theme);
@@ -53,7 +59,12 @@ export default function App() {
     [catalog, state.custom],
   );
   const [view, setView] = useState<View>(readView);
-  const [selectedId, setSelectedId] = useState('ayatul-kursi');
+  const [selectedId, setSelectedId] = useState(() =>
+    location.hash.startsWith('#recitation/')
+      ? decodeURIComponent(location.hash.slice(12))
+      : 'ayatul-kursi',
+  );
+  const [libraryReading, setLibraryReading] = useState(location.hash.startsWith('#recitation/'));
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState<Entry | null>(null);
   const [help, setHelp] = useState(false);
@@ -66,7 +77,12 @@ export default function App() {
     document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
   }, [state.lang]);
   useEffect(() => {
-    const change = () => setView(readView());
+    const change = () => {
+      setView(readView());
+      setLibraryReading(location.hash.startsWith('#recitation/'));
+      if (location.hash.startsWith('#recitation/'))
+        setSelectedId(decodeURIComponent(location.hash.slice(12)));
+    };
     window.addEventListener('hashchange', change);
     return () => window.removeEventListener('hashchange', change);
   }, []);
@@ -79,6 +95,10 @@ export default function App() {
     }
   }, [view, t]);
   function navigate(next: View) {
+    if (next === 'today') {
+      setLibraryReading(false);
+      if (location.hash.startsWith('#recitation/')) location.hash = 'today';
+    }
     if (view !== next) {
       location.hash = next;
       setView(next);
@@ -86,7 +106,9 @@ export default function App() {
   }
   function openEntry(id: string) {
     setSelectedId(id);
-    navigate('today');
+    setLibraryReading(true);
+    location.hash = `recitation/${encodeURIComponent(id)}`;
+    setView('today');
   }
   function saveEntry(entry: Entry) {
     updateState((s) => ({ ...s, custom: [...s.custom, entry] }));
@@ -228,16 +250,32 @@ export default function App() {
                 {t('storageError')}
               </div>
             )}
-            {view === 'today' && (
-              <Today
-                state={state}
-                entries={entries}
-                entry={entry}
-                day={day}
-                t={t}
-                onToast={show}
-                onBack={() => navigate('library')}
-              />
+            {view === 'today' && !libraryReading && (
+              <Suspense
+                fallback={
+                  <p role="status">
+                    {state.lang === 'ml' ? 'പാരായണങ്ങൾ തുറക്കുന്നു…' : 'Opening your recitations…'}
+                  </p>
+                }
+              >
+                <Tracker day={day} />
+              </Suspense>
+            )}
+            {view === 'today' && libraryReading && (
+              <>
+                <button className="button secondary" onClick={() => navigate('today')}>
+                  ← {state.lang === 'ml' ? 'ഇന്നത്തെ പാരായണങ്ങൾ' : 'Today’s recitations'}
+                </button>
+                <Today
+                  state={state}
+                  entries={entries}
+                  entry={entry}
+                  day={day}
+                  t={t}
+                  onToast={show}
+                  onBack={() => navigate('library')}
+                />
+              </>
             )}
             {view === 'library' && (
               <Library

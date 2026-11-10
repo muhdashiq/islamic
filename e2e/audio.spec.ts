@@ -11,7 +11,7 @@ test('playback highlights timed words, supports media controls and persists offl
   page.on('request', (request) => {
     if (request.url().includes('everyayah.com')) requests++;
   });
-  await page.goto('/');
+  await page.goto('/#recitation/ayatul-kursi');
   const play = page.getByRole('button', { name: 'Play recitation', exact: true });
   await expect(play).toBeEnabled();
   expect(requests).toBe(0);
@@ -59,7 +59,7 @@ test('playback highlights timed words, supports media controls and persists offl
 
 test('repeat loops at the end and navigation stops playback', async ({ page }) => {
   await mockRecording(page);
-  await page.goto('/');
+  await page.goto('/#recitation/ayatul-kursi');
   await page.getByRole('button', { name: 'Play recitation', exact: true }).click();
   await expect(page.locator('.audio-save-status')).toHaveText('Saved for offline listening');
   await page.getByRole('button', { name: 'Repeat verse', exact: true }).click();
@@ -80,7 +80,7 @@ test('failed downloads show retry feedback without false saved status', async ({
   await page.route('https://everyayah.com/**', (route) =>
     route.fulfill({ status: 503, body: 'Unavailable' }),
   );
-  await page.goto('/');
+  await page.goto('/#recitation/ayatul-kursi');
   await page.getByRole('button', { name: 'Save audio offline' }).click();
   await expect(page.getByRole('alert')).toContainText('Couldn’t download');
   await expect(page.locator('.audio-save-status')).not.toHaveText('Saved for offline listening');
@@ -93,7 +93,7 @@ test('audio controls pass accessibility scans and fit small RTL and dark screens
   page,
 }) => {
   await mockRecording(page);
-  await page.goto('/');
+  await page.goto('/#recitation/ayatul-kursi');
   await page.getByRole('button', { name: 'Save audio offline' }).click();
   await expect(page.locator('.audio-save-status')).toHaveText('Saved for offline listening');
   for (const width of [320, 390, 768, 1440]) {

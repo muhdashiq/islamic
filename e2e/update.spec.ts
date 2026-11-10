@@ -53,7 +53,7 @@ test('a new release activates automatically and keeps saved progress', async ({ 
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('Missing test server');
   try {
-    await page.goto(`http://127.0.0.1:${address.port}/`);
+    await page.goto(`http://127.0.0.1:${address.port}/#recitation/ayatul-kursi`);
     await expect(page.locator('.sidebar-offline')).toContainText('Available offline');
     await page.waitForFunction(() => !!navigator.serviceWorker.controller);
     await page.getByRole('button', { name: 'Mark as recited' }).click();
@@ -82,7 +82,7 @@ test('a new release activates automatically and keeps saved progress', async ({ 
       timeout: 20000,
     });
     await expect(page.getByText('A draft during an update', { exact: true })).toBeVisible();
-    await page.getByRole('link', { name: 'Today', exact: true }).click();
+    await page.getByRole('button', { name: /Ayatul Kursi/ }).click();
     await expect(page.getByRole('button', { name: 'Recited', exact: true })).toBeVisible();
     await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
   } finally {

@@ -2986,3 +2986,265 @@ main {
     padding-block: 18px;
   }
 }
+
+/* Daily sessions share the app's surfaces, type scale, and theme tokens. */
+.tracker {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 2rem;
+}
+.tracker-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.tracker-heading h1 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin: 0.65rem 0;
+}
+.tracker-heading p,
+.tracker-session > span,
+.tracker-welcome p {
+  color: var(--secondary);
+  line-height: 1.6;
+}
+.tracker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.tracker-welcome {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: var(--progress);
+  border: 1px solid var(--progress-border);
+  padding: 1.7rem;
+  border-radius: 24px;
+  margin-bottom: 1rem;
+}
+.tracker-welcome > div {
+  flex: 1;
+  min-width: 180px;
+}
+.tracker-welcome h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+.tracker-welcome p {
+  margin: 0;
+}
+.tracker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.tracker-session {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  gap: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  min-width: 0;
+  transition: background 0.15s;
+}
+.tracker-session:hover {
+  background: var(--hover);
+}
+.tracker-session h2 {
+  font-size: 1.15rem;
+  margin: 0;
+}
+.tracker-session > span {
+  font-size: 0.85rem;
+  flex: 1;
+}
+.tracker progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tracker progress::-webkit-progress-bar {
+  background: var(--ring-track);
+}
+.tracker progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 8px;
+}
+.tracker progress::-moz-progress-bar {
+  background: var(--accent);
+}
+.tracker-session strong {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.tracker-reader {
+  margin-top: 1.25rem;
+  max-width: 850px;
+  margin-inline: auto;
+  overflow: hidden;
+}
+.tracker-toolbar {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.tracker-toolbar label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.tracker select,
+.tracker input[type='time'] {
+  color: var(--text);
+  background: var(--input);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.5rem;
+  max-width: 100%;
+  min-height: 44px;
+}
+.tracker input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+.tracker-reading-body {
+  padding: clamp(1rem, 4vw, 2.5rem);
+}
+.tracker-reading-body .arabic-text {
+  line-height: 2.3;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.tracker-verse {
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.tracker-verse > p {
+  margin: 0.25rem 0;
+}
+.tracker-reading-body > p {
+  line-height: 1.9;
+  margin-block: 1.5rem;
+}
+.tracker-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.8rem;
+  border-top: 1px solid var(--border);
+  background: var(--toolbar);
+}
+.tracker-counter > span {
+  font-size: 2.3rem;
+  font-variant-numeric: tabular-nums;
+}
+.tracker-counter > progress {
+  max-width: 300px;
+}
+.tracker-counter > button {
+  min-width: 220px;
+  min-height: 64px;
+  font-size: 1.1rem;
+  touch-action: manipulation;
+}
+.tracker-evidence {
+  padding: 1.5rem;
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+  color: var(--secondary);
+  font-size: 0.9rem;
+}
+.tracker summary {
+  cursor: pointer;
+  padding-block: 0.6rem;
+  color: var(--text);
+}
+.tracker-evidence a {
+  text-decoration: underline;
+}
+.tracker-pagination {
+  justify-content: space-between;
+  padding: 1.5rem;
+}
+.tracker-panel {
+  padding: 1.5rem;
+  line-height: 1.7;
+}
+.tracker-panel h2 {
+  font-size: 1.3rem;
+  margin-block: 1.5rem;
+}
+.tracker-panel .setting-row {
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.tracker-panel details {
+  border-bottom: 1px solid var(--border);
+}
+.tracker-panel details p {
+  overflow-wrap: anywhere;
+}
+.tracker-focus {
+  position: fixed;
+  inset: 0;
+  max-width: none;
+  background: var(--background);
+  z-index: 25;
+  overflow: auto;
+  padding: 1.5rem max(1rem, calc((100vw - 960px) / 2));
+  padding-bottom: 6rem;
+}
+.tracker-focus > .tracker-heading {
+  display: none;
+}
+.tracker-focus > .tracker-actions {
+  margin-top: env(safe-area-inset-top);
+}
+@media (max-width: 1000px) {
+  .tracker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .tracker-grid {
+    grid-template-columns: 1fr;
+  }
+  .tracker-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .tracker-session {
+    padding: 1.25rem;
+  }
+  .tracker {
+    padding-block: 1rem;
+  }
+  .tracker-focus {
+    padding: 1rem;
+    padding-bottom: 6rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tracker-session {
+    transition: none;
+  }
+}

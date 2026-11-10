@@ -17,7 +17,7 @@ test('older readers can choose interface and Arabic sizes with a persistent live
   await expect(page.locator('.reading-preview p')).toHaveCSS('font-size', '56px');
   await page.getByRole('button', { name: 'Larger text', exact: true }).click();
   await expect(page.locator('.reading-preview p')).toHaveCSS('font-size', '58px');
-  await page.getByRole('link', { name: 'Today', exact: true }).click();
+  await page.goto('/#recitation/ayatul-kursi');
   await expect(page.locator('.arabic-text')).toHaveCSS('font-size', '58px');
   await expect(page.locator('.sidebar-offline')).toContainText('Available offline');
   await context.setOffline(true);

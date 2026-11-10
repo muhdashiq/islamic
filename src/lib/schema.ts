@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { arabicWords } from './audio';
+import { trackerSchema } from './tracker';
 
 export const languageSchema = z.enum(['en', 'ml', 'hi', 'ar']);
 export type Language = z.infer<typeof languageSchema>;
@@ -70,6 +71,7 @@ export const catalogSchema = z.object({
 export type Catalog = z.infer<typeof catalogSchema>;
 export const stateSchema = z.object({
   schemaVersion: z.literal(2).default(2),
+  tracker: trackerSchema.catch(() => trackerSchema.parse({})),
   lang: languageSchema.catch('en'),
   theme: z.enum(['system', 'light', 'dark']).catch('system'),
   target: z.number().int().min(1).max(1000).catch(1),
