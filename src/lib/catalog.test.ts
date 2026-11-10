@@ -27,3 +27,10 @@ it('imports valid entries and will not downgrade a newer catalog', async () => {
   );
   expect((await fetchCatalog()).version).toBe(4);
 });
+
+it('prefers the complete bundled schema over an equal-version cache written by an older app', () => {
+  const oldCache = structuredClone(bundledCatalog);
+  delete oldCache.entries[0]!.recitation;
+  localStorage.setItem('adkar-catalog', JSON.stringify(oldCache));
+  expect(loadCatalog().entries[0]?.recitation).toEqual(bundledCatalog.entries[0]?.recitation);
+});

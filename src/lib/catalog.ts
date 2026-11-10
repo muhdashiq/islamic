@@ -5,7 +5,7 @@ export const bundledCatalog = catalogSchema.parse(bundled);
 export function loadCatalog(): Catalog {
   try {
     const cached = catalogSchema.parse(JSON.parse(localStorage.getItem(KEY) ?? 'null'));
-    return cached.version >= bundledCatalog.version ? cached : bundledCatalog;
+    return cached.version > bundledCatalog.version ? cached : bundledCatalog;
   } catch {
     return bundledCatalog;
   }
