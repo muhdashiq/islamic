@@ -77,6 +77,19 @@ Browser tests use an isolated Google Chrome profile and start/stop a production 
 
 Dependency versions are locked in `package-lock.json`. Patched glob/minimatch versions are overridden for build tooling. The unpatched deepmerge advisory remains confined to the Workbox build dependency tree; it is not shipped in the app runtime.
 
-## Hosting
+## Hosting and continuous deployment
 
-The Sites identity remains in `.openai/hosting.json`. Source upload and hosted publication are pending explicit user authorization; the local React app is independently runnable and deployable.
+GitHub Pages publishes the production PWA whenever a commit is pushed to `main`. The workflow in `.github/workflows/pages.yml` installs locked dependencies, checks formatting, runs unit tests, type-checks and builds, then deploys only `dist/`. Failed checks prevent publication. It can also be started manually from the Actions tab.
+
+Repository Settings → Pages → Source must be **GitHub Actions**. The workflow reads the repository's Pages base path automatically, including project paths such as `/islamic/`, and uses that path for the application, icons, manifest, catalog and service worker. The current site is https://muhdashiq.com/islamic/.
+
+For a local build matching that project path:
+
+```sh
+VITE_BASE_PATH=/islamic/ npm run build
+npm run test:pages
+```
+
+The Pages browser test uses an isolated Chrome profile on port 4174 to verify assets, catalog requests, install scope and offline reload under `/islamic/`. Ordinary `npm run build` still targets the origin root for local development and other hosting.
+
+The previous Sites identity remains in `.openai/hosting.json`; this GitHub Pages workflow does not use it.

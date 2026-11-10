@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:pages": "playwright test --config playwright.pages.config.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

@@ -14,7 +14,7 @@ let pending: Promise<Catalog> | null = null;
 export function fetchCatalog(): Promise<Catalog> {
   if (pending) return pending;
   pending = (async () => {
-    const response = await fetch('/content.json', {
+    const response = await fetch(`${import.meta.env.BASE_URL}content.json`, {
       cache: 'no-store',
       signal: AbortSignal.timeout(10000),
     });
