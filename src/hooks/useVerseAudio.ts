@@ -22,9 +22,16 @@ interface Preferences {
   audioLoop: boolean;
   audioVolume: number;
 }
-export function useVerseAudio(recitation: Recitation | undefined, preferences: Preferences) {
+export function useVerseAudio(
+  recitation: Recitation | undefined,
+  preferences: Preferences,
+  onEnded?: () => void,
+) {
+  const onEndedRef = useRef(onEnded);
+  onEndedRef.current = onEnded;
   const audioRef = useRef<HTMLAudioElement>(null);
   const engine = useRef<Engine | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [storage, setStorage] = useState<StorageStatus>('checking');
   const [progress, setProgress] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -42,6 +49,13 @@ export function useVerseAudio(recitation: Recitation | undefined, preferences: P
     const current: Engine = { element: audio, blobUrl: null, blob: null, abort: null, alive: true };
     engine.current = current;
     setStorage('checking');
+    setLoadedId(null);
+    setPlaying(false);
+    setBuffering(false);
+    setDuration(0);
+    setProgress(null);
+    setSize(0);
+    restoreTime.current = null;
     setTime(0);
     setActiveSegment(-1);
     setError(null);
@@ -70,6 +84,7 @@ export function useVerseAudio(recitation: Recitation | undefined, preferences: P
     const ended = () => {
       pause();
       setActiveSegment(-1);
+      onEndedRef.current?.();
     };
     const wait = () => setBuffering(true);
     const ready = () => setBuffering(false);
@@ -110,12 +125,14 @@ export function useVerseAudio(recitation: Recitation | undefined, preferences: P
           audio.src = recitation.url;
           setStorage('unsaved');
         }
+        setLoadedId(recitation.id);
       })
       .catch(() => {
         if (current.alive) {
           audio.src = recitation.url;
           setStorage('unsaved');
         }
+        setLoadedId(recitation.id);
       });
     return () => {
       current.alive = false;
@@ -266,6 +283,7 @@ export function useVerseAudio(recitation: Recitation | undefined, preferences: P
   }, [recitation]);
   return {
     audioRef,
+    loadedId,
     storage,
     progress,
     playing,

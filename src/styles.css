@@ -3264,3 +3264,63 @@ main {
   line-height: 1.6;
   margin-top: 0.5rem;
 }
+
+.quran-passage {
+  padding: clamp(1.2rem, 4vw, 2.5rem);
+  text-align: justify;
+  text-align-last: start;
+  line-height: 2.6;
+  overflow-wrap: normal;
+}
+.quran-verse {
+  display: inline;
+}
+.quran-verse-marker {
+  color: var(--gold);
+  font-size: 0.7em;
+  white-space: nowrap;
+  margin-inline: 0.2em;
+}
+.quran-basmalah {
+  font-family: 'Geeza Pro', 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+  padding: 1rem 1.5rem 0;
+  margin: 0;
+  text-align: center;
+  line-height: 2;
+  color: var(--arabic);
+}
+.quran-playlist-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--toolbar);
+  border-bottom: 1px solid var(--border);
+}
+.quran-playlist-controls select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0.5rem;
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+}
+.quran-playlist-controls .setting-help {
+  margin: 0;
+  padding-inline: 0.3rem;
+}
+.tracker-reading-body.has-quran {
+  padding: 0;
+}
+.tracker-reading-body.has-quran .arabic-text {
+  line-height: 2.6;
+  text-align: justify;
+}
+.quran-passage .verse-word.is-current {
+  border-radius: 0.15em;
+  background: var(--selection);
+  color: var(--text);
+  box-shadow: 0 0 0 2px var(--selection);
+}

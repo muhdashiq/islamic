@@ -53,7 +53,9 @@ test('Malayalam, mobile layouts, dark mode and accessibility', async ({ page }) 
   await page.screenshot({ path: 'test-results/tracker-reading-settings.png', fullPage: true });
   await page.getByRole('link', { name: 'Today', exact: true }).click();
   await page.getByRole('button', { name: 'Continue recitation' }).click();
-  await expect(page.locator('.tracker-reader').getByRole('slider')).toHaveCount(0);
+  await expect(page.locator('.tracker-reader').getByRole('slider', { name: /Arabic/ })).toHaveCount(
+    0,
+  );
   expect((await new AxeBuilder({ page }).include('.tracker').analyze()).violations).toEqual([]);
   await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ml');
   await expect(page.getByRole('heading', { name: 'പ്രഭാത അദ്കാർ' })).toBeVisible();

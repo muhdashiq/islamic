@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { translator } from '../lib/i18n';
 import {
   ArrowLeft,
   ArrowRight,
@@ -25,6 +26,10 @@ import {
   type SessionItem,
 } from '../lib/tracker';
 import { Dialog } from './Dialog';
+
+const QuranReader = lazy(() =>
+  import('./QuranReader').then((module) => ({ default: module.QuranReader })),
+);
 
 export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
   const libraryById = Object.fromEntries(entries.map((entry) => [entry.id, entry]));
@@ -420,21 +425,20 @@ export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
                 <Bookmark fill={bookmarked ? 'currentColor' : 'none'} size={20} />
               </button>
             </div>
-            <div className="tracker-reading-body">
-              {content.verses ? (
-                content.verses.map((v) => (
-                  <div className="tracker-verse" key={v.key}>
-                    <p
-                      className="arabic-text"
-                      lang="ar"
-                      dir="rtl"
-                      style={{ fontSize: state.fontSize }}
-                    >
-                      {v.text}
-                    </p>
-                    <span className="eyebrow">{v.key}</span>
-                  </div>
-                ))
+            <div className={`tracker-reading-body ${content.quran ? 'has-quran' : ''}`}>
+              {content.quran && content.verses?.length ? (
+                <Suspense
+                  fallback={
+                    <p role="status">{text('Opening recitation…', 'പാരായണം തുറക്കുന്നു…')}</p>
+                  }
+                >
+                  <QuranReader
+                    key={content.id}
+                    entry={content}
+                    state={state}
+                    t={translator(state.lang)}
+                  />
+                </Suspense>
               ) : (
                 <p className="arabic-text" lang="ar" dir="rtl" style={{ fontSize: state.fontSize }}>
                   {content.arabic}

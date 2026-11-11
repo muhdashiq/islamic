@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Bookmark, Check, CheckCheck, ExternalLink, RotateCcw, BookOpen } from 'lucide-react';
 import type { AppState, Entry, Language } from '../lib/schema';
 import type { Translate } from '../lib/i18n';
@@ -6,6 +7,9 @@ import { updateState } from '../lib/store';
 import { AudioPlayer } from './AudioPlayer';
 import { useVerseAudio } from '../hooks/useVerseAudio';
 import { arabicWords } from '../lib/audio';
+const QuranReader = lazy(() =>
+  import('./QuranReader').then((module) => ({ default: module.QuranReader })),
+);
 interface Props {
   entry: Entry;
   state: AppState;
@@ -15,7 +19,7 @@ interface Props {
 }
 export function ReadingCard({ entry, state, day, t, onToast }: Props) {
   const custom = entry.id.startsWith('custom-');
-  const audio = useVerseAudio(entry.recitation, state);
+  const audio = useVerseAudio(entry.quran ? undefined : entry.recitation, state);
   const words = arabicWords(entry.arabic);
   const segment = entry.recitation?.segments[audio.activeSegment];
   const count = countFor(state, entry.id, day);
@@ -55,7 +59,7 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           <Bookmark size={20} fill={isSaved ? 'currentColor' : 'none'} />
         </button>
       </div>
-      {entry.recitation && (
+      {entry.recitation && !entry.quran && (
         <AudioPlayer
           audio={audio}
           recitation={entry.recitation}
@@ -64,68 +68,80 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           t={t}
         />
       )}
-      <div className="verse-body">
-        {entry.id === 'ayatul-kursi' && (
-          <div className="bismillah" dir="rtl" lang="ar">
-            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-          </div>
-        )}
-        <div
-          className="arabic-text"
-          lang="ar"
-          dir="rtl"
-          style={{ fontSize: `${state.fontSize}px` }}
-        >
-          {entry.recitation
-            ? words.map((word, index) => (
-                <span key={index}>
-                  <span
-                    className={`verse-word ${segment && index >= segment[0] && index < segment[1] ? 'is-current' : ''}`}
-                    aria-current={
-                      segment && index >= segment[0] && index < segment[1] ? 'true' : undefined
-                    }
-                    data-word={index}
-                  >
-                    {word}
-                  </span>
-                  {index < words.length - 1 ? ' ' : ''}
-                </span>
-              ))
-            : entry.verses
-              ? entry.verses.map((verse) => (
-                  <span className="library-verse" key={verse.key}>
-                    <span>{verse.text}</span>
-                    <span className="library-verse-number" dir="ltr">
-                      {verse.key}
+      {entry.quran && entry.verses?.length ? (
+        <Suspense fallback={<p role="status">{t('audioPlayer')}</p>}>
+          <QuranReader key={entry.id} entry={entry} state={state} t={t} />
+        </Suspense>
+      ) : (
+        <>
+          <div className="verse-body">
+            {entry.id === 'ayatul-kursi' && (
+              <div className="bismillah" dir="rtl" lang="ar">
+                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+              </div>
+            )}
+            <div
+              className="arabic-text"
+              lang="ar"
+              dir="rtl"
+              style={{ fontSize: `${state.fontSize}px` }}
+            >
+              {entry.recitation
+                ? words.map((word, index) => (
+                    <span key={index}>
+                      <span
+                        className={`verse-word ${segment && index >= segment[0] && index < segment[1] ? 'is-current' : ''}`}
+                        aria-current={
+                          segment && index >= segment[0] && index < segment[1] ? 'true' : undefined
+                        }
+                        data-word={index}
+                      >
+                        {word}
+                      </span>
+                      {index < words.length - 1 ? ' ' : ''}
                     </span>
-                  </span>
-                ))
-              : entry.arabic}
-        </div>
-        {entry.id === 'ayatul-kursi' && (
-          <div className="verse-flourish" aria-hidden="true">
-            <span />
-            <span className="verse-number">٢٥٥</span>
-            <span />
+                  ))
+                : entry.verses
+                  ? entry.verses.map((verse) => (
+                      <span className="library-verse" key={verse.key}>
+                        <span>{verse.text}</span>
+                        <span className="library-verse-number" dir="ltr">
+                          {verse.key}
+                        </span>
+                      </span>
+                    ))
+                  : entry.arabic}
+            </div>
+            {entry.id === 'ayatul-kursi' && (
+              <div className="verse-flourish" aria-hidden="true">
+                <span />
+                <span className="verse-number">٢٥٥</span>
+                <span />
+              </div>
+            )}
+            {state.tracker.transliteration && entry.transliteration && (
+              <p className="meaning-text" lang={state.tracker.language} dir="ltr">
+                {entry.transliteration[state.tracker.language]}
+              </p>
+            )}
+            {state.defaultMeaning && meaningText && (
+              <>
+                <p
+                  className="meaning-text"
+                  lang={state.lang}
+                  dir={state.lang === 'ar' ? 'rtl' : 'ltr'}
+                >
+                  {meaningText}
+                </p>
+                <p className="meaning-note">{t('meaningNote')}</p>
+              </>
+            )}
           </div>
-        )}
-        {state.tracker.transliteration && entry.transliteration && (
-          <p className="meaning-text" lang={state.tracker.language} dir="ltr">
-            {entry.transliteration[state.tracker.language]}
-          </p>
-        )}
-        {state.defaultMeaning && meaningText && (
-          <>
-            <p className="meaning-text" lang={state.lang} dir={state.lang === 'ar' ? 'rtl' : 'ltr'}>
-              {meaningText}
-            </p>
-            <p className="meaning-note">{t('meaningNote')}</p>
-          </>
-        )}
-      </div>
+        </>
+      )}
       {entry.quran && (
         <div className="source-row">
-          <span>{t('source')}</span>
+          <span>{t('builtIn')}</span>
           <a
             href={`https://quran.com/${entry.quran.surah}/${entry.quran.start}`}
             target="_blank"

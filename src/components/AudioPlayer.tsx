@@ -27,8 +27,9 @@ interface Props {
   title: string;
   state: AppState;
   t: Translate;
+  pending?: boolean;
 }
-export function AudioPlayer({ audio, recitation, title, state, t }: Props) {
+export function AudioPlayer({ audio, recitation, title, state, t, pending = false }: Props) {
   const statusId = useId();
   const menu = useRef<HTMLDetailsElement>(null);
   const duration = audio.duration || (recitation.segments.at(-1)?.[3] ?? 0) / 1000;
@@ -52,8 +53,9 @@ export function AudioPlayer({ audio, recitation, title, state, t }: Props) {
     return () => document.removeEventListener('pointerdown', close);
   }, []);
   useEffect(() => {
-    if (!audio.playing && !downloading) document.dispatchEvent(new Event('adkar-audio-idle'));
-  }, [audio.playing, downloading]);
+    if (!audio.playing && !downloading && !pending)
+      document.dispatchEvent(new Event('adkar-audio-idle'));
+  }, [audio.playing, downloading, pending]);
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;
     const element = audio.audioRef.current;
@@ -127,7 +129,7 @@ export function AudioPlayer({ audio, recitation, title, state, t }: Props) {
         ref={audio.audioRef}
         preload="none"
         crossOrigin="anonymous"
-        data-busy={audio.playing || downloading ? 'true' : 'false'}
+        data-busy={audio.playing || downloading || pending ? 'true' : 'false'}
         hidden
       />
       <div className="audio-heading">
@@ -306,6 +308,7 @@ export function AudioPlayer({ audio, recitation, title, state, t }: Props) {
               >
                 CC BY 4.0
               </a>
+              {recitation.timingNotes && <span> · {recitation.timingNotes}</span>}
             </p>
           </div>
         </details>

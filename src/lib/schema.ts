@@ -19,6 +19,7 @@ export const recitationSchema = z.object({
   bytes: z.number().int().positive().optional(),
   source: z.url(),
   timingSource: z.url(),
+  timingNotes: z.string().max(300).optional(),
   segments: z
     .array(
       z.tuple([

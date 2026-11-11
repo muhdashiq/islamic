@@ -12,7 +12,7 @@ test('Library includes all shared recitations, filters categories and shares boo
   await expect(page.locator('.library-entry')).toHaveCount(1);
   await page.locator('.entry-open').click();
   await expect(page.getByRole('heading', { name: 'Al-Ikhlas', exact: true })).toBeVisible();
-  await expect(page.locator('.library-verse')).toHaveCount(4);
+  await expect(page.locator('.quran-verse')).toHaveCount(4);
   await expect(page.locator('.bismillah')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Quran 112:1–4' })).toHaveAttribute(
     'href',
@@ -25,7 +25,7 @@ test('Library includes all shared recitations, filters categories and shares boo
     'aria-pressed',
     'true',
   );
-  await expect(page.locator('.tracker-verse')).toHaveCount(4);
+  await expect(page.locator('.quran-verse')).toHaveCount(4);
   await expect(page.locator('.tracker-counter [role=status]')).toContainText('0 / 3');
   await page.getByRole('button', { name: 'Tap to count' }).click();
   await page.getByRole('link', { name: /Library/ }).click();
@@ -53,14 +53,14 @@ test('complete long Surahs and Malayalam Library remain accessible offline', asy
   await expect(page.locator('.library-entry')).toHaveCount(4);
   expect((await new AxeBuilder({ page }).include('main').analyze()).violations).toEqual([]);
   await page.getByRole('button', { name: /Al-Mulk/ }).click();
-  await expect(page.locator('.library-verse')).toHaveCount(30);
+  await expect(page.locator('.quran-verse')).toHaveCount(30);
   await expect(page.locator('.arabic-text')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('.sidebar-offline')).toContainText('Available offline', {
     timeout: 20000,
   });
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('.library-verse')).toHaveCount(30);
+  await expect(page.locator('.quran-verse')).toHaveCount(30);
   await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ml');
   await expect(page.getByRole('heading', { name: 'അൽ മുൽക്ക്', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
