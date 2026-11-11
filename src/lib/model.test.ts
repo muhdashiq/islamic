@@ -56,3 +56,16 @@ describe('persisted data and content boundaries', () => {
     expect(catalogSchema.safeParse({ version: 2, entries: [] }).success).toBe(false);
   });
 });
+
+it('offers onboarding only to fresh profiles and preserves returning-user data', () => {
+  expect(parseState({}).onboardingComplete).toBe(false);
+  const returning = parseState({ lang: 'ml', days: { '2026-11-10': { 'ayatul-kursi': 3 } } });
+  expect(returning.onboardingComplete).toBe(true);
+  expect(returning.lang).toBe('ml');
+  expect(returning.days['2026-11-10']?.['ayatul-kursi']).toBe(3);
+  expect(parseState({ lang: 'ar', onboardingComplete: false }).onboardingComplete).toBe(false);
+  expect(
+    parseState(JSON.parse(JSON.stringify({ ...returning, onboardingComplete: true })))
+      .onboardingComplete,
+  ).toBe(true);
+});

@@ -88,6 +88,7 @@ export type Catalog = z.infer<typeof catalogSchema>;
 export const stateSchema = z.object({
   schemaVersion: z.literal(2).default(2),
   tracker: trackerSchema.catch(() => trackerSchema.parse({})),
+  onboardingComplete: z.boolean().catch(false),
   lang: languageSchema.catch('en'),
   theme: z.enum(['system', 'light', 'dark']).catch('system'),
   target: z.number().int().min(1).max(1000).catch(1),
@@ -111,5 +112,14 @@ export const DEFAULT_STATE: AppState = stateSchema.parse({});
 export function parseState(value: unknown): AppState {
   const result = stateSchema.safeParse(value);
   if (!result.success) return { ...DEFAULT_STATE };
-  return { ...result.data, bookmarks: [...new Set(result.data.bookmarks.map(bookmarkId))] };
+  const legacyUser =
+    typeof value === 'object' &&
+    value !== null &&
+    !('onboardingComplete' in value) &&
+    Object.keys(value).length > 0;
+  return {
+    ...result.data,
+    onboardingComplete: result.data.onboardingComplete || legacyUser,
+    bookmarks: [...new Set(result.data.bookmarks.map(bookmarkId))],
+  };
 }

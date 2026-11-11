@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 // Serve two real release manifests without rewriting the production build.
 // This exercises the browser's service-worker lifecycle, not a mocked hook.

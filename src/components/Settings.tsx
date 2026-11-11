@@ -113,6 +113,7 @@ export function Settings({
                 </span>
                 <span className="native-select">
                   <select
+                    id="app-language"
                     aria-label={t('language')}
                     value={state.lang}
                     onChange={(event) =>

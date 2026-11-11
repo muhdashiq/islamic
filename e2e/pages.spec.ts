@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('GitHub Pages subpath supports assets, catalog, installation and offline reload', async ({
   page,

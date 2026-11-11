@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, setLanguage } from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
 
 test('dashboard sessions, reading, persisted count, offline resume and reset', async ({
@@ -6,7 +6,7 @@ test('dashboard sessions, reading, persisted count, offline resume and reset', a
   context,
 }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Today’s recitations' })).toBeVisible();
+  await expect(page.locator('.tracker-welcome')).toBeVisible();
   await expect(page.locator('.tracker-session')).toHaveCount(9);
   await page.getByRole('button', { name: 'Continue recitation' }).click();
   await expect(page.getByRole('heading', { name: 'Ayatul Kursi', exact: true })).toBeVisible();
@@ -57,7 +57,8 @@ test('Malayalam, mobile layouts, dark mode and accessibility', async ({ page }) 
     0,
   );
   expect((await new AxeBuilder({ page }).include('.tracker').analyze()).violations).toEqual([]);
-  await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ml');
+  await setLanguage(page, 'ml');
+  await page.getByRole('button', { name: 'പാരായണം തുടരുക', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'പ്രഭാത അദ്കാർ' })).toBeVisible();
   await page.getByRole('button', { name: 'അടുത്തത്', exact: true }).click();
   await page.getByRole('button', { name: 'അടുത്തത്', exact: true }).click();
@@ -73,14 +74,14 @@ test('Malayalam, mobile layouts, dark mode and accessibility', async ({ page }) 
 });
 test('reminders are opt-in and data deletion preserves original library', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Tracker preferences' }).click();
+  await page.locator('a[href="#reminders"]').click();
   await expect(page.getByText(/while Adkar is open/)).toBeVisible();
   await expect(
     page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true }),
   ).not.toBeChecked();
   await page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true }).check();
   await page.reload();
-  await page.getByRole('button', { name: 'Tracker preferences' }).click();
+  await page.locator('a[href="#reminders"]').click();
   await expect(page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true })).toBeChecked();
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Export data' }).click();

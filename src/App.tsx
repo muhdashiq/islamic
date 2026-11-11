@@ -2,19 +2,19 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookOpen,
   Check,
-  ChevronDown,
   CircleHelp,
   Flower2,
   Leaf,
   Plus,
   Settings2,
-  ShieldCheck,
   Sun,
+  Bell,
+  History,
   WifiOff,
 } from 'lucide-react';
 import { useAppState, updateState, useSaveFailed } from './lib/store';
-import { languageNames, translator } from './lib/i18n';
-import type { Entry, Language } from './lib/schema';
+import { translator } from './lib/i18n';
+import type { Entry } from './lib/schema';
 import { mergeEntries } from './lib/model';
 import { composeLibrary } from './lib/library';
 import { useTheme } from './hooks/useTheme';
@@ -26,6 +26,7 @@ import { useReminders } from './hooks/useReminders';
 import { Library } from './components/Library';
 import { Settings } from './components/Settings';
 import { AddEntry } from './components/AddEntry';
+import { Onboarding } from './components/Onboarding';
 import { Dialog } from './components/Dialog';
 import { Toast, useToast } from './components/Toast';
 
@@ -33,15 +34,16 @@ const Tracker = lazy(() =>
   import('./components/Tracker').then((module) => ({ default: module.Tracker })),
 );
 
-type View = 'today' | 'library' | 'settings';
+type View = 'today' | 'library' | 'history' | 'settings' | 'reminders';
 const tabs = [
   { key: 'today', icon: Sun },
   { key: 'library', icon: BookOpen },
+  { key: 'history', icon: History },
   { key: 'settings', icon: Settings2 },
 ] as const;
 function readView(): View {
   const key = location.hash.slice(1);
-  return tabs.some((tab) => tab.key === key) ? (key as View) : 'today';
+  return key === 'reminders' || tabs.some((tab) => tab.key === key) ? (key as View) : 'today';
 }
 export default function App() {
   const state = useAppState();
@@ -220,22 +222,15 @@ export default function App() {
                 )}
                 <span>{t(pwa.online ? 'online' : 'offline')}</span>
               </span>
-              <label className="native-select language-picker">
-                <span className="sr-only">{t('language')}</span>
-                <select
-                  value={state.lang}
-                  onChange={(event) =>
-                    updateState((s) => ({ ...s, lang: event.target.value as Language }))
-                  }
-                >
-                  {Object.entries(languageNames).map(([key, label]) => (
-                    <option key={key} value={key} lang={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={12} />
-              </label>
+              <a
+                href="#reminders"
+                className="icon-button"
+                aria-label={t('reminders')}
+                aria-current={view === 'reminders' ? 'page' : undefined}
+                onClick={() => navigate('reminders')}
+              >
+                <Bell size={20} />
+              </a>
               <button
                 className="icon-button help-button"
                 aria-label={t('appOffline')}
@@ -251,7 +246,9 @@ export default function App() {
                 {t('storageError')}
               </div>
             )}
-            {view === 'today' && !libraryReading && (
+            {((view === 'today' && !libraryReading) ||
+              view === 'history' ||
+              view === 'reminders') && (
               <Suspense
                 fallback={
                   <p role="status">
@@ -259,7 +256,13 @@ export default function App() {
                   </p>
                 }
               >
-                <Tracker day={day} entries={entries} />
+                <Tracker
+                  day={day}
+                  entries={entries}
+                  panel={
+                    view === 'history' ? 'history' : view === 'reminders' ? 'preferences' : null
+                  }
+                />
               </Suspense>
             )}
             {view === 'today' && libraryReading && (
@@ -302,19 +305,9 @@ export default function App() {
               />
             )}
           </main>
-          <footer>
-            <span>
-              <Flower2 size={12} />
-              adkar<span>·</span>
-              {t('bottomNote')}
-            </span>
-            <span>
-              <ShieldCheck size={12} />
-              {t('localOnly')}
-            </span>
-          </footer>
         </div>
       </div>
+      <Onboarding state={state} />
       <AddEntry
         key={state.lang}
         open={adding}

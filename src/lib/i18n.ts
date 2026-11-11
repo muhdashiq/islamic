@@ -9,6 +9,8 @@ const en = {
   today: 'Today',
   library: 'Library',
   settings: 'Settings',
+  history: 'History',
+  reminders: 'Reminders',
   yourSpace: 'YOUR SPACE',
   greeting: 'A little remembrance. A lighter heart.',
   intro: 'Make a little space for what matters, every day.',
@@ -279,6 +281,8 @@ const dictionaries: Record<Language, Record<TranslationKey, string>> = {
     ...audioTranslations.ml,
     ...readingTranslations.ml,
     today: 'ഇന്ന്',
+    history: 'ചരിത്രം',
+    reminders: 'ഓർമ്മപ്പെടുത്തലുകൾ',
   },
   hi: {
     ...en,
@@ -287,6 +291,8 @@ const dictionaries: Record<Language, Record<TranslationKey, string>> = {
     ...audioTranslations.hi,
     ...readingTranslations.hi,
     today: 'आज',
+    history: 'इतिहास',
+    reminders: 'अनुस्मारक',
   },
   ar: {
     ...en,
@@ -295,6 +301,8 @@ const dictionaries: Record<Language, Record<TranslationKey, string>> = {
     ...audioTranslations.ar,
     ...readingTranslations.ar,
     today: 'اليوم',
+    history: 'السجل',
+    reminders: 'التذكيرات',
   },
 };
 export const languageNames: Record<Language, string> = {

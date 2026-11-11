@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, setLanguage } from './fixtures';
 import { mockRecording } from './audio-fixture';
 
 test('playback highlights timed words, supports media controls and persists offline audio', async ({
@@ -124,7 +124,7 @@ test('audio controls pass accessibility scans and fit small RTL and dark screens
   await page.screenshot({ path: '/private/tmp/adkar-audio-mobile.png' });
   await page.getByRole('button', { name: 'Pause recitation', exact: true }).click();
   for (const lang of ['ar', 'ml', 'hi', 'en']) {
-    await page.locator('.language-picker select').selectOption(lang);
+    await setLanguage(page, lang);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, setLanguage } from './fixtures';
 
 test('system appearance changes live and persists explicit overrides', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
@@ -63,7 +63,7 @@ test('production installation caches app and preserves progress across offline r
 test('small devices, RTL and larger text fit without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto('/#recitation/ayatul-kursi');
-  await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ar');
+  await setLanguage(page, 'ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.getByRole('link', { name: 'الإعدادات', exact: true }).click();
   await page.getByRole('button', { name: 'تكبير النص', exact: true }).click();
@@ -106,7 +106,7 @@ test('responsive light and dark screens are readable in all four languages', asy
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: '/private/tmp/adkar-react-mobile-dark.png', fullPage: true });
   for (const lang of ['ml', 'hi', 'ar', 'en']) {
-    await page.locator('.language-picker select').selectOption(lang);
+    await setLanguage(page, lang);
     await expect(page.locator('html')).toHaveAttribute('lang', lang);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),

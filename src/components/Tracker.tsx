@@ -8,7 +8,6 @@ import {
   Moon,
   Sun,
   BookOpen,
-  Bell,
   RotateCcw,
 } from 'lucide-react';
 import { useAppState, updateState } from '../lib/store';
@@ -31,7 +30,15 @@ const QuranReader = lazy(() =>
   import('./QuranReader').then((module) => ({ default: module.QuranReader })),
 );
 
-export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
+export function Tracker({
+  day,
+  entries,
+  panel = null,
+}: {
+  day: string;
+  entries: Entry[];
+  panel?: 'history' | 'preferences' | null;
+}) {
   const libraryById = Object.fromEntries(entries.map((entry) => [entry.id, entry]));
   const state = useAppState();
   const { tracker } = state;
@@ -39,7 +46,6 @@ export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
   const text = (en: string, mal: string) => (ml ? mal : en);
   const all = sessions(tracker.formula);
   const [selected, setSelected] = useState<{ session: string; item: string } | null>(null);
-  const [panel, setPanel] = useState<'history' | 'preferences' | null>(null);
   const [focus, setFocus] = useState(false);
   const [confirm, setConfirm] = useState<null | 'counter' | 'today' | 'history' | 'all'>(null);
   const [permission, setPermission] = useState(
@@ -59,7 +65,8 @@ export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
   }, [selected?.session, selected?.item]);
   useEffect(() => {
     setSelected(null);
-  }, [day]);
+    setFocus(false);
+  }, [day, panel]);
   function open(s: Session, i?: SessionItem) {
     const target =
       i ?? s.items.find((i) => trackerCount(tracker, s, i, day) < i.target) ?? s.items[0]!;
@@ -164,49 +171,31 @@ export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
       lang={ml ? 'ml' : 'en'}
       dir="ltr"
     >
-      <div className="tracker-heading">
-        <div>
-          <span className="eyebrow">
-            {text('A quiet moment, every day', 'ഓരോ ദിവസവും ഒരു ശാന്ത നിമിഷം')}
-          </span>
-          <h1 ref={heading} tabIndex={-1}>
-            {session
+      <h1
+        ref={heading}
+        lang={panel ? state.lang : ml ? 'ml' : 'en'}
+        dir={panel && state.lang === 'ar' ? 'rtl' : 'ltr'}
+        tabIndex={-1}
+        className={panel || session ? 'tracker-page-title' : 'sr-only'}
+      >
+        {panel === 'history'
+          ? translator(state.lang)('history')
+          : panel === 'preferences'
+            ? translator(state.lang)('reminders')
+            : session
               ? ml
                 ? session.titleMl
                 : session.title
               : text('Today’s recitations', 'ഇന്നത്തെ പാരായണങ്ങൾ')}
-          </h1>
-          <p>
-            {new Intl.DateTimeFormat(ml ? 'ml-IN' : 'en', { dateStyle: 'full' }).format(
-              new Date(`${day}T12:00:00`),
-            )}
-          </p>
-        </div>
-        <div className="tracker-actions">
-          <button
-            className="button secondary"
-            onClick={() => {
-              setPanel(panel === 'history' ? null : 'history');
-              setSelected(null);
-            }}
-          >
-            {text('History', 'ചരിത്രം')}
-          </button>
-          <button
-            className="icon-button"
-            aria-label={text('Tracker preferences', 'ട്രാക്കർ ക്രമീകരണങ്ങൾ')}
-            onClick={() => {
-              setPanel(panel === 'preferences' ? null : 'preferences');
-              setSelected(null);
-            }}
-          >
-            <Bell size={20} />
-          </button>
-        </div>
-      </div>
+      </h1>
       {panel === 'preferences' ? (
         <div className="settings-surface tracker-panel">
-          <h2>{text('Reading & reminders', 'വായനയും ഓർമ്മപ്പെടുത്തലുകളും')}</h2>
+          <h2>
+            {text(
+              'Reminders & recitation preferences',
+              'ഓർമ്മപ്പെടുത്തലുകളും പാരായണ ക്രമീകരണങ്ങളും',
+            )}
+          </h2>
           <label className="setting-row">
             {text('After-Salah counting formula', 'നമസ്കാര ശേഷമുള്ള എണ്ണൽ രീതി')}
             <select

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, setLanguage } from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
 
 test('Library includes all shared recitations, filters categories and shares bookmarks', async ({
@@ -61,7 +61,7 @@ test('complete long Surahs and Malayalam Library remain accessible offline', asy
   await context.setOffline(true);
   await page.reload();
   await expect(page.locator('.quran-verse')).toHaveCount(30);
-  await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ml');
+  await setLanguage(page, 'ml');
   await expect(page.getByRole('heading', { name: 'അൽ മുൽക്ക്', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await context.setOffline(false);

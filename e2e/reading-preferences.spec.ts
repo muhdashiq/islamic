@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, setLanguage } from './fixtures';
 
 test('older readers can choose interface and Arabic sizes with a persistent live preview', async ({
   page,
@@ -44,7 +44,7 @@ test('maximum reading sizes fit all supported languages on the smallest screen',
   await page.getByRole('slider', { name: 'Arabic text size', exact: true }).fill('64');
   await expect(page.getByRole('button', { name: 'Larger text', exact: true })).toBeDisabled();
   for (const language of ['en', 'ml', 'hi', 'ar']) {
-    await page.locator('.language-picker select').selectOption(language);
+    await setLanguage(page, language);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
       `settings ${language}`,
