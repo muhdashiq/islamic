@@ -184,6 +184,22 @@ export function resume(tracker: TrackerState, day: string) {
   }
   return null;
 }
+// Editable device-local suggestions, never calculated prayer times.
+const reminderDefaults: Readonly<Record<string, string>> = {
+  morning: '06:00',
+  fajr: '05:45',
+  dhuhr: '13:15',
+  asr: '16:30',
+  maghrib: '18:30',
+  isha: '20:00',
+  evening: '17:00',
+  bedtime: '22:00',
+  weekly: '10:00',
+};
+export function defaultReminderTime(sessionId: string): string {
+  return reminderDefaults[sessionId] ?? '09:00';
+}
+
 export function reminderDue(tracker: TrackerState, session: Session, now: Date) {
   const reminder = tracker.reminders[session.id];
   if (!reminder?.enabled || (session.weekly && now.getDay() !== 5)) return false;

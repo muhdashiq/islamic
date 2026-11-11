@@ -17,6 +17,7 @@ import { libraryId } from '../lib/recitation-ids';
 import type { Entry } from '../lib/schema';
 import {
   resume,
+  defaultReminderTime,
   sessions,
   sessionProgress,
   trackerCount,
@@ -223,25 +224,52 @@ export function Tracker({
           </label>
           <p>
             {text(
-              'Optional device-time reminders while Adkar is open. Browsers cannot reliably schedule local notifications when this PWA is closed. These are personal times, not calculated prayer times.',
-              'അദ്കാർ തുറന്നിരിക്കുമ്പോൾ മാത്രം ഉപകരണ സമയത്തിലുള്ള ഓർമ്മപ്പെടുത്തലുകൾ. ആപ്പ് അടച്ചിരിക്കുമ്പോൾ ബ്രൗസറിൽ ഇവ ഉറപ്പാക്കാനാവില്ല. ഇവ നമസ്കാര സമയ കണക്കുകൂട്ടലുകളല്ല.',
+              'Optional device-time reminders while Adkar is open. Browsers cannot reliably schedule local notifications when this PWA is closed. Suggested times are editable; adjust them to your local prayer schedule. They are not calculated prayer times.',
+              'അദ്കാർ തുറന്നിരിക്കുമ്പോൾ മാത്രം ഉപകരണ സമയത്തിലുള്ള ഓർമ്മപ്പെടുത്തലുകൾ. ആപ്പ് അടച്ചിരിക്കുമ്പോൾ ബ്രൗസറിൽ ഇവ ഉറപ്പാക്കാനാവില്ല. നിർദ്ദേശിച്ച സമയങ്ങൾ നിങ്ങളുടെ പ്രദേശത്തെ നമസ്കാര സമയങ്ങൾക്ക് അനുസരിച്ച് മാറ്റുക. ഇവ കണക്കാക്കിയ നമസ്കാര സമയങ്ങളല്ല.',
             )}
           </p>
-          <button
-            className="button secondary"
-            disabled={
-              permission === 'unsupported' || permission === 'denied' || permission === 'granted'
-            }
-            onClick={async () => {
-              try {
-                setPermission(await Notification.requestPermission());
-              } catch {
-                setPermission('unsupported');
+          <div className="tracker-actions">
+            <button
+              className="button secondary"
+              disabled={
+                permission === 'unsupported' || permission === 'denied' || permission === 'granted'
               }
-            }}
-          >
-            {text('Enable notifications', 'അറിയിപ്പുകൾ അനുവദിക്കുക')} · {permission}
-          </button>
+              onClick={async () => {
+                try {
+                  setPermission(await Notification.requestPermission());
+                } catch {
+                  setPermission('unsupported');
+                }
+              }}
+            >
+              {text('Enable notifications', 'അറിയിപ്പുകൾ അനുവദിക്കുക')} · {permission}
+            </button>
+            <button
+              className="button secondary"
+              onClick={() =>
+                updateState((old) => ({
+                  ...old,
+                  tracker: {
+                    ...old.tracker,
+                    reminders: {
+                      ...old.tracker.reminders,
+                      ...Object.fromEntries(
+                        all.map((session) => [
+                          session.id,
+                          {
+                            enabled: old.tracker.reminders[session.id]?.enabled ?? false,
+                            time: defaultReminderTime(session.id),
+                          },
+                        ]),
+                      ),
+                    },
+                  },
+                }))
+              }
+            >
+              {text('Use suggested times', 'നിർദ്ദേശിച്ച സമയങ്ങൾ ഉപയോഗിക്കുക')}
+            </button>
+          </div>
           {all.map((s) => (
             <label className="setting-row" key={s.id}>
               <span>
@@ -257,7 +285,7 @@ export function Tracker({
                         reminders: {
                           ...old.tracker.reminders,
                           [s.id]: {
-                            time: old.tracker.reminders[s.id]?.time ?? '08:00',
+                            time: old.tracker.reminders[s.id]?.time ?? defaultReminderTime(s.id),
                             enabled: e.target.checked,
                           },
                         },
@@ -270,7 +298,7 @@ export function Tracker({
               <input
                 aria-label={`${s.title} reminder time`}
                 type="time"
-                value={tracker.reminders[s.id]?.time ?? '08:00'}
+                value={tracker.reminders[s.id]?.time ?? defaultReminderTime(s.id)}
                 onChange={(e) => {
                   if (e.target.value)
                     updateState((old) => ({

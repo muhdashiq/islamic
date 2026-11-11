@@ -122,3 +122,7 @@ The global footer and visible Today intro/date block are removed. Today retains 
 Language selection is available only in Settings and a first-use welcome dialog (`Onboarding.tsx`). It supports all existing UI languages, previews the chosen language immediately, and persists `onboardingComplete` in the existing state. Legacy saved profiles migrate as already onboarded without changing their language/progress; fresh profiles see the language screen. Existing feature browser tests use a returning-user fixture; dedicated onboarding tests use untouched profiles. Mobile navigation uses four equal columns and bottom safe-area padding so the final card remains reachable without a footer.
 
 Navigation/onboarding validation: 36 unit tests and 24 browser tests passed, including first-use language selection, saved-user migration, reminder/history routes, a 320px four-tab menu, accessibility and existing Quran/audio/offline regressions. The welcome-dialog accessibility scan waits for its entrance animation to finish so it checks final rendered contrast rather than a transient fade.
+
+## Contextual reminder defaults
+
+New reminder times default to Morning 06:00, Fajr 05:45, Dhuhr 13:15, Asr 16:30, Maghrib 18:30, Isha 20:00, Evening 17:00, Bedtime 22:00 and Friday Al-Kahf 10:00. These are editable device-local suggestions, not location-calculated prayer times. Existing saved times are preserved. “Use suggested times” explicitly applies the suggestions to all reminder times while preserving enabled/disabled switches. Reminders remain off until enabled.

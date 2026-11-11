@@ -79,9 +79,17 @@ test('reminders are opt-in and data deletion preserves original library', async 
   await expect(
     page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true }),
   ).not.toBeChecked();
+  await expect(page.getByLabel('Morning Adhkar reminder time')).toHaveValue('06:00');
+  await expect(page.getByLabel('After Dhuhr reminder time')).toHaveValue('13:15');
+  await expect(page.getByLabel('Before sleeping reminder time')).toHaveValue('22:00');
+  await page.getByLabel('Morning Adhkar reminder time').fill('07:10');
   await page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true }).check();
   await page.reload();
   await page.locator('a[href="#reminders"]').click();
+  await expect(page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true })).toBeChecked();
+  await expect(page.getByLabel('Morning Adhkar reminder time')).toHaveValue('07:10');
+  await page.getByRole('button', { name: 'Use suggested times' }).click();
+  await expect(page.getByLabel('Morning Adhkar reminder time')).toHaveValue('06:00');
   await expect(page.getByRole('checkbox', { name: 'Morning Adhkar', exact: true })).toBeChecked();
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Export data' }).click();
