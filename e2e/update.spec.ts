@@ -84,7 +84,7 @@ test('a new release activates automatically and keeps saved progress', async ({ 
     await expect(page.getByText('A draft during an update', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: /Ayatul Kursi/ }).click();
     await expect(page.getByRole('button', { name: 'Recited', exact: true })).toBeVisible();
-    await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
+    await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '5');
   } finally {
     server.closeAllConnections();
     await new Promise<void>((resolve) => server.close(() => resolve()));

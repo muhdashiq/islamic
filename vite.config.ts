@@ -55,6 +55,15 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.endsWith('/src/data/quran.json')) return 'quran-content';
+        },
+      },
+    },
+  },
   server: { headers: { 'Cache-Control': 'no-cache' } },
   preview: { headers: { 'Cache-Control': 'no-cache' } },
   test: {

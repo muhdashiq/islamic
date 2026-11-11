@@ -9,7 +9,7 @@ test('dashboard sessions, reading, persisted count, offline resume and reset', a
   await expect(page.getByRole('heading', { name: 'Today’s recitations' })).toBeVisible();
   await expect(page.locator('.tracker-session')).toHaveCount(9);
   await page.getByRole('button', { name: 'Continue recitation' }).click();
-  await expect(page.getByRole('heading', { name: 'Ayat al-Kursi', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ayatul Kursi', exact: true })).toBeVisible();
   await expect(page.locator('.tracker-reading-body .arabic-text')).toHaveAttribute('dir', 'rtl');
   await page.getByRole('button', { name: 'Tap to count' }).click();
   await expect(page.getByRole('button', { name: 'Completed', exact: true })).toBeDisabled();

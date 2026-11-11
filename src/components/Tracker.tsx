@@ -12,7 +12,9 @@ import {
 } from 'lucide-react';
 import { useAppState, updateState } from '../lib/store';
 import { dayKey } from '../lib/model';
-import { recitations, CONTENT_VERSION } from '../lib/tracker-content';
+import { CONTENT_VERSION } from '../lib/tracker-content';
+import { libraryId } from '../lib/recitation-ids';
+import type { Entry } from '../lib/schema';
 import {
   resume,
   sessions,
@@ -24,7 +26,8 @@ import {
 } from '../lib/tracker';
 import { Dialog } from './Dialog';
 
-export function Tracker({ day }: { day: string }) {
+export function Tracker({ day, entries }: { day: string; entries: Entry[] }) {
+  const libraryById = Object.fromEntries(entries.map((entry) => [entry.id, entry]));
   const state = useAppState();
   const { tracker } = state;
   const ml = state.lang === 'ml';
@@ -41,7 +44,7 @@ export function Tracker({ day }: { day: string }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const session = all.find((s) => s.id === selected?.session);
   const item = session?.items.find((i) => i.id === selected?.item);
-  const content = item && recitations[item.id];
+  const content = item && libraryById[item.recitationId ?? libraryId(item.id)];
   const count = session && item ? trackerCount(tracker, session, item, day) : 0;
   const next = resume(tracker, day);
   useEffect(() => {
@@ -119,7 +122,6 @@ export function Tracker({ day }: { day: string }) {
             formula: '33+tawhid',
           },
         },
-        bookmarks: s.bookmarks.filter((id) => !id.startsWith('tracker:')),
       }));
       setSelected(null);
     }
@@ -135,7 +137,7 @@ export function Tracker({ day }: { day: string }) {
             contentVersion: CONTENT_VERSION,
             exportedAt: new Date().toISOString(),
             tracker,
-            bookmarks: state.bookmarks.filter((id) => id.startsWith('tracker:')),
+            bookmarks: state.bookmarks.filter((id) => libraryById[id]),
           },
           null,
           2,
@@ -150,7 +152,7 @@ export function Tracker({ day }: { day: string }) {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  const bookmarked = content && state.bookmarks.includes(`tracker:${content.id}`);
+  const bookmarked = content && state.bookmarks.includes(content.id);
   return (
     <section
       className={`tracker ${focus ? 'tracker-focus' : ''}`}
@@ -360,8 +362,8 @@ export function Tracker({ day }: { day: string }) {
                       {(() => {
                         const parts = key.split(':');
                         const savedSession = all.find((s) => s.id === parts[0]);
-                        const savedItem = recitations[parts.at(-1)!];
-                        return `${savedSession ? (ml ? savedSession.titleMl : savedSession.title) : text('Past session', 'മുൻ വിഭാഗം')} · ${savedItem ? (ml ? savedItem.titleMl : savedItem.title) : text('Recitation', 'പാരായണം')}`;
+                        const savedItem = libraryById[libraryId(parts.at(-1)!)];
+                        return `${savedSession ? (ml ? savedSession.titleMl : savedSession.title) : text('Past session', 'മുൻ വിഭാഗം')} · ${savedItem ? savedItem.title[state.lang] || savedItem.title.en : text('Recitation', 'പാരായണം')}`;
                       })()}{' '}
                       · {n}
                     </p>
@@ -399,7 +401,7 @@ export function Tracker({ day }: { day: string }) {
                   {session.items.findIndex((i) => i.id === item.id) + 1} / {session.items.length} ·{' '}
                   {text('Recitations', 'പാരായണങ്ങൾ')}
                 </span>
-                <h2>{ml ? content.titleMl : content.title}</h2>
+                <h2>{content.title[state.lang] || content.title.en}</h2>
                 <p>{session.time}</p>
               </div>
               <button
@@ -410,8 +412,8 @@ export function Tracker({ day }: { day: string }) {
                   updateState((s) => ({
                     ...s,
                     bookmarks: bookmarked
-                      ? s.bookmarks.filter((id) => id !== `tracker:${content.id}`)
-                      : [...s.bookmarks, `tracker:${content.id}`],
+                      ? s.bookmarks.filter((id) => id !== content.id)
+                      : [...s.bookmarks, content.id],
                   }))
                 }
               >
@@ -548,14 +550,16 @@ export function Tracker({ day }: { day: string }) {
               );
             })}
           </div>
-          {state.bookmarks.some((id) => id.startsWith('tracker:')) && (
+          {state.bookmarks.some((id) =>
+            all.some((s) => s.items.some((i) => i.recitationId === id)),
+          ) && (
             <div className="settings-surface tracker-panel">
               <h2>{text('Bookmarked recitations', 'ബുക്ക്മാർക്ക് ചെയ്ത പാരായണങ്ങൾ')}</h2>
               {state.bookmarks
-                .filter((id) => id.startsWith('tracker:'))
+                .filter((id) => all.some((s) => s.items.some((i) => i.recitationId === id)))
                 .map((id) => {
-                  const rid = id.slice(8);
-                  const s = all.find((s) => s.items.some((i) => i.id === rid));
+                  const rid = id;
+                  const s = all.find((s) => s.items.some((i) => i.recitationId === rid));
                   return (
                     s && (
                       <button
@@ -564,11 +568,11 @@ export function Tracker({ day }: { day: string }) {
                         onClick={() =>
                           open(
                             s,
-                            s.items.find((i) => i.id === rid),
+                            s.items.find((i) => i.recitationId === rid),
                           )
                         }
                       >
-                        {recitations[rid]?.[ml ? 'titleMl' : 'title']}
+                        {libraryById[rid]?.title[state.lang] || libraryById[rid]?.title.en}
                       </button>
                     )
                   );

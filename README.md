@@ -33,7 +33,9 @@ The system theme is applied before React renders to avoid a light-theme flash. L
 - `src/lib/model.ts`: immutable, testable progress and catalog composition logic.
 - `src/lib/catalog.ts`: bundled offline fallback, validated network updates and persisted catalog. The catalog never downgrades.
 - `src/lib/i18n.ts`: typed translation keys and four-language text; no HTML injection.
-- `public/content.json`: the single source of built-in Adkar, also bundled into the app for offline use.
+- `src/lib/library.ts`: shared Library registry for all 20 built-in recitations, consumed by the Library and daily categories.
+- `src/lib/tracker-content.ts` and `src/data/quran.json`: versioned source content and Quran corpus used to build that registry.
+- `public/content.json`: legacy catalog metadata/audio plus support for additional remotely delivered entries.
 - `vite.config.ts`: production asset precaching, service worker generation and update policy.
 
 Original prototype language, progress, goals, bookmarks and personal Adkar are migrated from the existing `adkar-state` key. Invalid fields fall back individually. Storage errors are shown without crashing the app. Progress uses the device’s local date, refreshes at midnight/foreground, and stays separate for each entry. A personal goal is a tracking preference, not a religiously prescribed repetition count.
@@ -48,7 +50,9 @@ A bundled catalog keeps the library usable even if the first content fetch fails
 
 ## Add built-in Adkar
 
-Add entries to `public/content.json` and increment its integer `version`. Keep existing IDs stable:
+For recitations shared by Library and daily categories, add reviewed content to `src/lib/tracker-content.ts`; Quran Arabic must come from the versioned corpus in `src/data/quran.json`. `src/lib/library.ts` builds one normalized entry per recitation. Add only an ID and contextual count to the appropriate session in `src/lib/tracker.ts`—do not copy the text into a category. Keep source versions and IDs stable and update the content-integrity tests.
+
+Additional standalone catalog entries can still be added to `public/content.json` by incrementing its integer `version`:
 
 ```json
 {
@@ -115,3 +119,5 @@ Future built-in entries can add optional `recitation` metadata: stable versioned
 Today includes morning/evening, five Salah-specific, bedtime and weekly/regular Quran sessions, locally saved counters, resume, bookmarks, history, privacy controls and optional reminders while the app is running. Existing Library and Ayat al-Kursi audio remain available.
 
 The Quran Arabic is bundled verbatim from Tanzil with attribution and copyright notice. **The feature is not yet a fully verified release:** bilingual editorial review and several evidence checks remain pending. Arabic-only Quran reading is supported; full Quran translations/transliterations are optional future enhancements. Reminders cannot reliably run when this browser PWA is closed. See [tracker architecture, checked references, licensing, and release blockers](docs/tracker.md).
+
+All built-in recitations are available in Library, searchable and filterable by the five recitation categories. Categories resolve shared Library IDs while maintaining separate contextual repetition counts. Bookmarks are shared; existing `tracker:` bookmark IDs migrate automatically. Personal Library counts, daily session counts, history and Ayat al-Kursi offline audio remain separate and intact.

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { AppState } from './schema';
 import { dayKey } from './model';
+import { libraryId } from './recitation-ids';
 export const trackerSchema = z.object({
   version: z.literal(1).default(1),
   counts: z
@@ -26,6 +27,7 @@ export type TrackerState = z.infer<typeof trackerSchema>;
 export interface SessionItem {
   id: string;
   target: number;
+  recitationId: string;
 }
 export interface Session {
   id: string;
@@ -35,7 +37,7 @@ export interface Session {
   items: SessionItem[];
   weekly?: boolean;
 }
-const i = (id: string, target = 1): SessionItem => ({ id, target });
+const i = (id: string, target = 1): SessionItem => ({ id, target, recitationId: libraryId(id) });
 const three = (target: number) => ['ikhlas', 'falaq', 'nas'].map((id) => i(id, target));
 export function sessions(formula: TrackerState['formula'] = '33+tawhid'): Session[] {
   const prayer = [

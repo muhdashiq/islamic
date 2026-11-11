@@ -92,3 +92,13 @@ The dashboard preview notice, inline evidence notes and reader evidence disclosu
 ## Arabic-first tracker display
 
 All tracker reading screens omit translations, inline editorial review notices and the evidence disclosure. Source/review data remains in the versioned dataset. Optional pronunciation remains controlled by Settings; the meaning visibility preference now applies only to Library readings and is labeled accordingly. Tanzil attribution and licensing remain in Settings.
+
+## Shared Library registry
+
+`src/lib/library.ts` builds all 20 existing recitations into normalized Library entries, with a single shared Ayat al-Kursi ID (`ayatul-kursi`) retaining its original localized title, meanings and offline audio metadata. Arabic text comes from the same versioned source corpus used by categories. Each `SessionItem.recitationId` references a Library entry; its legacy `id` remains stable solely for saved session-count keys. Both Library and tracker readers receive the same composed entry objects from App.
+
+Library supports title search, five category filters, category labels, shared bookmarks and complete verse-by-verse Surahs. Dua/dhikr entries no longer inherit a Quran 2:255 citation, verse number or introductory basmalah from the old single-entry reader. `entrySchema` supports long Quran readings and structured verses; personal-entry input remains limited by the existing editor. Category counts stay contextual (e.g. Al-Ikhlas three times in morning, once after Salah), separate from Library personal goals.
+
+Existing `tracker:` bookmarks migrate to shared Library IDs and are deduplicated. Clearing tracker data retains shared Library bookmarks, just as it retains original Library data; tracker export includes shared built-in bookmarks. No progress keys or audio IDs are rewritten. Remote-only catalog additions remain supported; bundled reviewed Library text takes precedence for shared built-ins.
+
+Validation for this change: 31 unit tests and all 20 browser tests passed, including shared-reference coverage, bookmark migration/cross-reader behavior, category filtering, complete Surah reading offline, Malayalam/RTL, existing audio and service-worker updates. Production build and strict TypeScript pass. The Quran corpus is emitted as a separate precached chunk.

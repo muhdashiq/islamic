@@ -42,7 +42,9 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
             {custom ? t('personal') : t('dailyRemembrance')}
           </span>
           <h2 id="reading-title">{entry.title[state.lang] || entry.title.en}</h2>
-          <p className="subtitle">{custom ? t('personal') : t('verseSubtitle')}</p>
+          <p className="subtitle">
+            {entry.reference || (custom ? t('personal') : t('dailyRemembrance'))}
+          </p>
         </div>
         <button
           className={`icon-button bookmark ${isSaved ? 'is-saved' : ''}`}
@@ -63,7 +65,7 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
         />
       )}
       <div className="verse-body">
-        {!custom && (
+        {entry.id === 'ayatul-kursi' && (
           <div className="bismillah" dir="rtl" lang="ar">
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </div>
@@ -89,14 +91,28 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
                   {index < words.length - 1 ? ' ' : ''}
                 </span>
               ))
-            : entry.arabic}
+            : entry.verses
+              ? entry.verses.map((verse) => (
+                  <span className="library-verse" key={verse.key}>
+                    <span>{verse.text}</span>
+                    <span className="library-verse-number" dir="ltr">
+                      {verse.key}
+                    </span>
+                  </span>
+                ))
+              : entry.arabic}
         </div>
-        {!custom && (
+        {entry.id === 'ayatul-kursi' && (
           <div className="verse-flourish" aria-hidden="true">
             <span />
             <span className="verse-number">٢٥٥</span>
             <span />
           </div>
+        )}
+        {state.tracker.transliteration && entry.transliteration && (
+          <p className="meaning-text" lang={state.tracker.language} dir="ltr">
+            {entry.transliteration[state.tracker.language]}
+          </p>
         )}
         {state.defaultMeaning && meaningText && (
           <>
@@ -107,11 +123,15 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           </>
         )}
       </div>
-      {!custom && (
+      {entry.quran && (
         <div className="source-row">
           <span>{t('source')}</span>
-          <a href="https://quran.com/2/255" target="_blank" rel="noreferrer">
-            {t('reference')}
+          <a
+            href={`https://quran.com/${entry.quran.surah}/${entry.quran.start}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {entry.reference}
             <ExternalLink size={11} />
           </a>
         </div>

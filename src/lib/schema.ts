@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { arabicWords } from './audio';
 import { trackerSchema } from './tracker';
+import { bookmarkId } from './recitation-ids';
 
 export const languageSchema = z.enum(['en', 'ml', 'hi', 'ar']);
 export type Language = z.infer<typeof languageSchema>;
@@ -43,7 +44,21 @@ export const entrySchema = z
   .object({
     id: z.string().min(1).max(150),
     title: localizedText.extend({ en: z.string().trim().min(1).max(120) }),
-    arabic: z.string().trim().min(1).max(12000),
+    arabic: z.string().trim().min(1).max(250000),
+    kind: z.enum(['surah', 'ayah', 'dua', 'dhikr']).optional(),
+    verses: z
+      .array(z.object({ key: z.string(), text: z.string() }))
+      .max(286)
+      .optional(),
+    quran: z
+      .object({
+        surah: z.number().int().min(1).max(114),
+        start: z.number().int().positive(),
+        end: z.number().int().positive(),
+      })
+      .optional(),
+    transliteration: z.object({ en: z.string(), ml: z.string() }).optional(),
+    sourceVersion: z.string().optional(),
     meaning: localizedText.default({}),
     reference: z.string().max(200).optional(),
     recitation: recitationSchema.optional(),
@@ -94,5 +109,6 @@ export type AppState = z.infer<typeof stateSchema>;
 export const DEFAULT_STATE: AppState = stateSchema.parse({});
 export function parseState(value: unknown): AppState {
   const result = stateSchema.safeParse(value);
-  return result.success ? result.data : { ...DEFAULT_STATE };
+  if (!result.success) return { ...DEFAULT_STATE };
+  return { ...result.data, bookmarks: [...new Set(result.data.bookmarks.map(bookmarkId))] };
 }

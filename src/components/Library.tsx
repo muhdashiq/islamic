@@ -3,6 +3,7 @@ import { BookOpen, Bookmark, Check, ChevronRight, Plus, Search, Trash2 } from 'l
 import type { AppState, Entry } from '../lib/schema';
 import type { Translate } from '../lib/i18n';
 import { countFor } from '../lib/model';
+import { libraryCategories } from '../lib/library';
 interface Props {
   entries: Entry[];
   state: AppState;
@@ -15,9 +16,12 @@ interface Props {
 export function Library({ entries, state, day, t, onOpen, onAdd, onDelete }: Props) {
   const [query, setQuery] = useState('');
   const [savedOnly, setSavedOnly] = useState(false);
+  const [category, setCategory] = useState('all');
+  const selectedCategory = libraryCategories.find((item) => item.id === category);
   const results = entries.filter(
     (entry) =>
       (!savedOnly || state.bookmarks.includes(entry.id)) &&
+      (!selectedCategory || selectedCategory.entryIds.has(entry.id)) &&
       Object.values(entry.title).some((title) =>
         title?.toLocaleLowerCase(state.lang).includes(query.trim().toLocaleLowerCase(state.lang)),
       ),
@@ -67,6 +71,24 @@ export function Library({ entries, state, day, t, onOpen, onAdd, onDelete }: Pro
           </button>
         </div>
       </div>
+      <div className="library-category-filter">
+        <label className="native-select">
+          <span>{state.lang === 'ml' ? 'വിഭാഗം' : 'Category'}</span>
+          <select value={category} onChange={(event) => setCategory(event.target.value)}>
+            <option value="all">
+              {state.lang === 'ml' ? 'എല്ലാ വിഭാഗങ്ങളും' : 'All categories'}
+            </option>
+            {libraryCategories.map((item) => (
+              <option key={item.id} value={item.id}>
+                {state.lang === 'ml' ? item.titleMl : item.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <span className="setting-help" role="status">
+          {results.length} {state.lang === 'ml' ? 'പാരായണങ്ങൾ' : 'recitations'}
+        </span>
+      </div>
       {results.length ? (
         <div className="library-list">
           {results.map((entry) => {
@@ -79,12 +101,32 @@ export function Library({ entries, state, day, t, onOpen, onAdd, onDelete }: Pro
                     {done ? <Check size={22} /> : <BookOpen size={22} strokeWidth={1.4} />}
                   </span>
                   <span className="entry-info">
-                    <span className="eyebrow">{personal ? t('personal') : t('builtIn')}</span>
+                    <span className="eyebrow">
+                      {personal
+                        ? t('personal')
+                        : entry.kind === 'dua'
+                          ? state.lang === 'ml'
+                            ? 'ദുആ'
+                            : 'Supplication'
+                          : entry.kind === 'dhikr'
+                            ? state.lang === 'ml'
+                              ? 'ദിക്ർ'
+                              : 'Remembrance'
+                            : t('builtIn')}
+                    </span>
                     <span className="entry-title">{entry.title[state.lang] || entry.title.en}</span>
                     <span className="entry-meta">
                       {entry.reference || t('personal')}
                       <span className="meta-dot">·</span>
                       {countFor(state, entry.id, day)} / {state.target}
+                    </span>
+                    <span className="entry-categories">
+                      {libraryCategories
+                        .filter((category) => category.entryIds.has(entry.id))
+                        .map((category) =>
+                          state.lang === 'ml' ? category.titleMl : category.title,
+                        )
+                        .join(' · ')}
                     </span>
                   </span>
                   {state.bookmarks.includes(entry.id) && (

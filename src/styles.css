@@ -3228,3 +3228,39 @@ main {
     transition: none;
   }
 }
+
+.library-category-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0 0 1rem;
+}
+.library-category-filter label {
+  gap: 0.75rem;
+}
+.library-category-filter select {
+  max-width: 100%;
+  border: 1px solid var(--border);
+}
+.entry-categories {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--secondary);
+}
+.library-verse {
+  display: block;
+  padding-block: 0.6em;
+  border-bottom: 1px solid var(--border);
+}
+.library-verse-number {
+  display: block;
+  font-family: var(--font-ui, system-ui);
+  font-size: 0.8rem;
+  color: var(--secondary);
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}

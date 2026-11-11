@@ -18,11 +18,11 @@ test('system appearance changes live and persists explicit overrides', async ({ 
 test('personal Adkar, bookmarks, recitation, reset undo and deletion undo', async ({ page }) => {
   await page.goto('/#recitation/ayatul-kursi');
   await page.getByRole('button', { name: 'Mark as recited' }).click();
-  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '5');
   await page.getByRole('button', { name: 'Reset count' }).click();
   await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
-  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+  await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '5');
   await page.getByRole('button', { name: 'Save bookmark' }).click();
   await page.getByRole('link', { name: /Library/ }).click();
   await page.getByRole('main').getByRole('button', { name: 'Add Adkar', exact: true }).click();

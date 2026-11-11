@@ -16,6 +16,7 @@ import { useAppState, updateState, useSaveFailed } from './lib/store';
 import { languageNames, translator } from './lib/i18n';
 import type { Entry, Language } from './lib/schema';
 import { mergeEntries } from './lib/model';
+import { composeLibrary } from './lib/library';
 import { useTheme } from './hooks/useTheme';
 import { useDay } from './hooks/useDay';
 import { usePwa } from './hooks/usePwa';
@@ -55,7 +56,7 @@ export default function App() {
   const pwa = usePwa();
   const { catalog, status, refresh } = useCatalog(pwa.online, pwa.update);
   const entries = useMemo(
-    () => mergeEntries(catalog.entries, state.custom),
+    () => mergeEntries(composeLibrary(catalog.entries), state.custom),
     [catalog, state.custom],
   );
   const [view, setView] = useState<View>(readView);
@@ -258,7 +259,7 @@ export default function App() {
                   </p>
                 }
               >
-                <Tracker day={day} />
+                <Tracker day={day} entries={entries} />
               </Suspense>
             )}
             {view === 'today' && libraryReading && (
