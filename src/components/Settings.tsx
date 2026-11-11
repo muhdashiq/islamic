@@ -149,7 +149,14 @@ export function Settings({
                 />
               </label>
               <label className="setting-row">
-                <span className="setting-title">{t('showMeaning')}</span>
+                <span>
+                  <span className="setting-title">{t('showMeaning')}</span>
+                  <span className="setting-help">
+                    {state.lang === 'ml'
+                      ? 'ലൈബ്രറിയിലെ പാരായണങ്ങൾക്ക് മാത്രം ബാധകം.'
+                      : 'Applies to Library readings only.'}
+                  </span>
+                </span>
                 <span className="switch">
                   <input
                     type="checkbox"
@@ -157,6 +164,62 @@ export function Settings({
                     checked={state.defaultMeaning}
                     onChange={(event) =>
                       updateState((s) => ({ ...s, defaultMeaning: event.target.checked }))
+                    }
+                  />
+                  <span aria-hidden="true" />
+                </span>
+              </label>
+              <label className="setting-row">
+                <span>
+                  <span className="setting-title">
+                    {state.lang === 'ml' ? 'ഉച്ചാരണ സഹായത്തിന്റെ ഭാഷ' : 'Pronunciation language'}
+                  </span>
+                  <span className="setting-help">
+                    {state.lang === 'ml'
+                      ? 'ലഭ്യമായ അദ്കാർ ഉച്ചാരണ സഹായത്തിനുള്ള ഭാഷ.'
+                      : 'For available Adhkar pronunciation guides.'}
+                  </span>
+                </span>
+                <span className="native-select">
+                  <select
+                    aria-label={
+                      state.lang === 'ml' ? 'ഉച്ചാരണ സഹായത്തിന്റെ ഭാഷ' : 'Pronunciation language'
+                    }
+                    value={state.tracker.language}
+                    onChange={(event) =>
+                      updateState((s) => ({
+                        ...s,
+                        tracker: { ...s.tracker, language: event.target.value as 'en' | 'ml' },
+                      }))
+                    }
+                  >
+                    <option value="en">English</option>
+                    <option value="ml">മലയാളം</option>
+                  </select>
+                  <ChevronDown size={13} />
+                </span>
+              </label>
+              <label className="setting-row">
+                <span>
+                  <span className="setting-title">
+                    {state.lang === 'ml' ? 'ഉച്ചാരണ സഹായം കാണിക്കുക' : 'Show pronunciation guide'}
+                  </span>
+                  <span className="setting-help">
+                    {state.lang === 'ml'
+                      ? 'ലഭ്യമായ പാരായണങ്ങളിൽ മാത്രം കാണിക്കും.'
+                      : 'Appears only for recitations with an available guide.'}
+                  </span>
+                </span>
+                <span className="switch">
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    checked={state.tracker.transliteration}
+                    onChange={(event) =>
+                      updateState((s) => ({
+                        ...s,
+                        tracker: { ...s.tracker, transliteration: event.target.checked },
+                      }))
                     }
                   />
                   <span aria-hidden="true" />
@@ -227,6 +290,16 @@ export function Settings({
               </div>
             </div>
           </section>
+          <p className="setting-help">
+            {state.lang === 'ml' ? 'ഖുർആൻ അറബി: ' : 'Quran Arabic: '}
+            <a href="https://tanzil.net" target="_blank" rel="noreferrer">
+              Tanzil Project
+            </a>
+            {' · '}
+            <a href={`${import.meta.env.BASE_URL}licenses/tanzil.txt`}>
+              {state.lang === 'ml' ? 'പകർപ്പവകാശവും അനുമതിയും' : 'Copyright & license'}
+            </a>
+          </p>
           <p className="version">
             ADKAR <span>·</span> {t('version')} {version}
           </p>

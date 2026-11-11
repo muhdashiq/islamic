@@ -37,7 +37,7 @@ const en = {
   settingsIntro: 'A comfortable space for your daily practice.',
   reading: 'Reading',
   target: 'Daily recitation goal',
-  showMeaning: 'Show meaning first',
+  showMeaning: 'Show meanings',
   appOffline: 'App & offline',
   updates: 'Automatic updates',
   updatesHelp: 'Checks when opened and every hour online. Your progress is preserved.',

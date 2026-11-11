@@ -3098,17 +3098,6 @@ main {
   margin-inline: auto;
   overflow: hidden;
 }
-.tracker-toolbar {
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.tracker-toolbar label {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-}
 .tracker select,
 .tracker input[type='time'] {
   color: var(--text);
@@ -3166,21 +3155,12 @@ main {
   font-size: 1.1rem;
   touch-action: manipulation;
 }
-.tracker-evidence {
-  padding: 1.5rem;
-  line-height: 1.7;
-  border-top: 1px solid var(--border);
-  color: var(--secondary);
-  font-size: 0.9rem;
-}
 .tracker summary {
   cursor: pointer;
   padding-block: 0.6rem;
   color: var(--text);
 }
-.tracker-evidence a {
-  text-decoration: underline;
-}
+
 .tracker-pagination {
   justify-content: space-between;
   padding: 1.5rem;

@@ -65,7 +65,9 @@ test('small devices, RTL and larger text fit without horizontal overflow', async
   await page.goto('/#recitation/ayatul-kursi');
   await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await page.getByRole('link', { name: 'الإعدادات', exact: true }).click();
   await page.getByRole('button', { name: 'تكبير النص', exact: true }).click();
+  await page.goto('/#recitation/ayatul-kursi');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('link', { name: 'الإعدادات', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'المظهر', exact: true })).toBeVisible();

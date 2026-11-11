@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useAppState, updateState } from '../lib/store';
 import { dayKey } from '../lib/model';
-import { recitations, references, CONTENT_VERSION } from '../lib/tracker-content';
+import { recitations, CONTENT_VERSION } from '../lib/tracker-content';
 import {
   resume,
   sessions,
@@ -418,61 +418,7 @@ export function Tracker({ day }: { day: string }) {
                 <Bookmark fill={bookmarked ? 'currentColor' : 'none'} size={20} />
               </button>
             </div>
-            <div className="reading-toolbar tracker-toolbar">
-              {content.translation && (
-                <label>
-                  {text('Meaning language', 'അർത്ഥത്തിന്റെ ഭാഷ')}{' '}
-                  <select
-                    value={tracker.language}
-                    onChange={(e) =>
-                      updateState((s) => ({
-                        ...s,
-                        tracker: { ...s.tracker, language: e.target.value as 'en' | 'ml' },
-                      }))
-                    }
-                  >
-                    <option value="en">English</option>
-                    <option value="ml">മലയാളം</option>
-                  </select>
-                </label>
-              )}
-              {content.transliteration && (
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={tracker.transliteration}
-                    onChange={(e) =>
-                      updateState((s) => ({
-                        ...s,
-                        tracker: { ...s.tracker, transliteration: e.target.checked },
-                      }))
-                    }
-                  />
-                  {text('Pronunciation', 'ഉച്ചാരണം')}
-                </label>
-              )}
-              <label>
-                {text('Arabic size', 'അറബി അക്ഷരവലുപ്പം')}
-                <input
-                  type="range"
-                  min="22"
-                  max="64"
-                  step="2"
-                  value={state.fontSize}
-                  onChange={(e) => updateState((s) => ({ ...s, fontSize: Number(e.target.value) }))}
-                />
-              </label>
-            </div>
             <div className="tracker-reading-body">
-              {content.note && <p className="setting-help">{content.note}</p>}
-              {content.translation && (
-                <p className="setting-help">
-                  {text(
-                    'Editorial meaning and pronunciation guide · awaiting qualified bilingual review.',
-                    'അർത്ഥവും ഉച്ചാരണ സഹായവും · വിദഗ്ധ ദ്വിഭാഷാ പരിശോധനയ്ക്ക് കാത്തിരിക്കുന്നു.',
-                  )}
-                </p>
-              )}
               {content.verses ? (
                 content.verses.map((v) => (
                   <div className="tracker-verse" key={v.key}>
@@ -494,11 +440,6 @@ export function Tracker({ day }: { day: string }) {
               )}
               {tracker.transliteration && content.transliteration && (
                 <p lang={tracker.language}>{content.transliteration[tracker.language]}</p>
-              )}
-              {content.translation && (
-                <p lang={tracker.language} className="meaning-text">
-                  {content.translation[tracker.language]}
-                </p>
               )}
             </div>
             <div className="tracker-counter">
@@ -535,43 +476,6 @@ export function Tracker({ day }: { day: string }) {
                 </button>
               </div>
             </div>
-            <details className="tracker-evidence">
-              <summary>{text('Sources & evidence notes', 'ഉറവിടങ്ങളും തെളിവുകളും')}</summary>
-              <p>
-                {text('Content edition', 'ഉള്ളടക്ക പതിപ്പ്')}: {CONTENT_VERSION}
-              </p>
-              <p>{content.review}</p>
-              {content.note && <p>{content.note}</p>}
-              {content.id === 'ikhlas' || content.id === 'falaq' || content.id === 'nas' ? (
-                <p>
-                  Bedtime: recite all three, blow gently into cupped hands and wipe over the body;
-                  repeat the sequence three times (Bukhari 5017). After Salah: one recitation each;
-                  morning/evening three-counts are tracked separately.
-                </p>
-              ) : null}
-              {content.references.map((id) => {
-                const r = references[id]!;
-                return (
-                  <p key={id}>
-                    <a href={r.url} target="_blank" rel="noreferrer">
-                      {r.label}
-                    </a>{' '}
-                    · {r.grade}
-                  </p>
-                );
-              })}
-              {content.verses && (
-                <p>
-                  <a href="https://tanzil.net" target="_blank" rel="noreferrer">
-                    Tanzil Project · Uthmani 1.1
-                  </a>{' '}
-                  ·{' '}
-                  <a href={`${import.meta.env.BASE_URL}licenses/tanzil.txt`}>
-                    Copyright & license (CC BY 3.0; text unmodified)
-                  </a>
-                </p>
-              )}
-            </details>
             <div className="tracker-actions tracker-pagination">
               <button
                 className="button secondary"
@@ -623,12 +527,6 @@ export function Tracker({ day }: { day: string }) {
               </button>
             )}
           </div>
-          <p className="setting-help">
-            {text(
-              'Source-attributed preview · Quran Arabic is from Tanzil. Arabic-only Quran reading is supported. Editorial dua meanings, pronunciation guides and some scheduling evidence still need qualified review. These sessions are not a list of obligations.',
-              'ഉറവിടങ്ങളോടുകൂടിയ പ്രിവ്യൂ · ഖുർആൻ അറബി തൻസീലിൽ നിന്നുള്ളതാണ്. ഖുർആൻ അറബിയിൽ മാത്രം വായിക്കാം. ദുആ അർത്ഥങ്ങളും ഉച്ചാരണവും ചില സമയക്രമ തെളിവുകളും വിദഗ്ധ പരിശോധന ആവശ്യമാണ്. ഇവ നിർബന്ധ കർമ്മങ്ങളുടെ പട്ടികയല്ല.',
-            )}
-          </p>
           <div className="tracker-grid">
             {all.map((s) => {
               const p = sessionProgress(tracker, s, day);

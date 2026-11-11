@@ -39,7 +39,21 @@ test('Malayalam, mobile layouts, dark mode and accessibility', async ({ page }) 
   await page.goto('/');
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(16, 23, 20)');
   expect((await new AxeBuilder({ page }).include('.tracker').analyze()).violations).toEqual([]);
+  await page.getByRole('link', { name: 'Settings', exact: true }).click();
+  await page.getByRole('slider', { name: 'Arabic text size', exact: true }).fill('64');
+  await page.getByRole('combobox', { name: 'Pronunciation language' }).selectOption('ml');
+  await page.getByRole('switch', { name: 'Show meanings' }).check();
+  await page.getByRole('switch', { name: /Show pronunciation guide/ }).check();
+  await page.reload();
+  await expect(page.getByRole('slider', { name: 'Arabic text size', exact: true })).toHaveValue(
+    '64',
+  );
+  await expect(page.getByRole('switch', { name: 'Show meanings' })).toBeChecked();
+  expect((await new AxeBuilder({ page }).include('main').analyze()).violations).toEqual([]);
+  await page.screenshot({ path: 'test-results/tracker-reading-settings.png', fullPage: true });
+  await page.getByRole('link', { name: 'Today', exact: true }).click();
   await page.getByRole('button', { name: 'Continue recitation' }).click();
+  await expect(page.locator('.tracker-reader').getByRole('slider')).toHaveCount(0);
   expect((await new AxeBuilder({ page }).include('.tracker').analyze()).violations).toEqual([]);
   await page.getByRole('combobox', { name: 'Language', exact: true }).selectOption('ml');
   await expect(page.getByRole('heading', { name: 'പ്രഭാത അദ്കാർ' })).toBeVisible();
@@ -47,11 +61,11 @@ test('Malayalam, mobile layouts, dark mode and accessibility', async ({ page }) 
   await page.getByRole('button', { name: 'അടുത്തത്', exact: true }).click();
   await page.getByRole('button', { name: 'അടുത്തത്', exact: true }).click();
   await page.getByRole('button', { name: 'അടുത്തത്', exact: true }).click();
-  await page.locator('.tracker-toolbar').getByRole('combobox').selectOption('ml');
-  await expect(page.locator('.tracker-reading-body .meaning-text')).toContainText('അല്ലാഹുവേ');
-  await page.getByLabel('ഉച്ചാരണം').check();
+  await expect(page.locator('.tracker-reading-body .meaning-text')).toHaveCount(0);
+  await expect(page.locator('.tracker-evidence')).toHaveCount(0);
+  await expect(page.getByText(/Editorial meaning and pronunciation guide/)).toHaveCount(0);
   await expect(page.locator('.tracker-reading-body')).toContainText('അല്ലാഹുമ്മ');
-  await page.getByLabel('അറബി അക്ഷരവലുപ്പം').fill('64');
+  await expect(page.locator('.tracker-reading-body .arabic-text')).toHaveCSS('font-size', '64px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/tracker-malayalam-dark.png', fullPage: true });
 });

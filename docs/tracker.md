@@ -4,7 +4,7 @@ This feature extends the existing React 19 / TypeScript / Vite PWA. It is a sour
 
 ## Architecture and changed files
 
-- `src/components/Tracker.tsx`: Today dashboard, nine session cards covering five categories, dedicated session reading, adjustable Arabic, focus mode, language and pronunciation controls, contextual counters, bookmarks, history, reminders, export and deletion confirmations. English/Malayalam interface; existing Hindi/Arabic shell retained, but tracker copy falls back to English for these languages.
+- `src/components/Tracker.tsx`: Today dashboard, nine session cards covering five categories, dedicated session reading, Arabic sizing and optional meaning/pronunciation configured in Settings, focus mode, contextual counters, bookmarks, history, reminders, export and deletion confirmations. English/Malayalam interface; existing Hindi/Arabic shell retained, but tracker copy falls back to English for these languages.
 - `src/lib/tracker.ts`: normalized scheduled instances, daily/weekly keys, formula selection, resume and notification eligibility; Zod validation for persisted tracker state.
 - `src/lib/schema.ts`: adds a defaulted, versioned tracker namespace to existing `adkar-state`. Existing library, personal entries, audio preferences, bookmarks and daily goals migrate without modification. Counters are keyed by period/session/formula/recitation; content is not duplicated by session. The original entry/audio model remains compatible.
 - `src/lib/tracker-content.ts`: versioned, source-attributed recitation definitions and a normalized reference registry. Session-specific repetitions live in `tracker.ts`, not shared content.
@@ -80,3 +80,15 @@ No lint script exists; use formatting checks, strict TypeScript, unit tests, pro
 Browser tests required permission to run the localhost preview and Chrome outside the filesystem sandbox. These results do not constitute scholarly content certification or native iOS/Android device testing.
 
 `python3 scripts/import-tracker-quran.py /path/to/tanzil-download.txt` reproduces the selected corpus from the exact downloaded source. The importer refuses a source hash mismatch. Any new source edition requires deliberate review, versioning and updated integrity expectations.
+
+## Reading settings UX update
+
+Arabic size remains in Settings → Reading comfort with its live preview. Settings → Reading now contains persistent meaning visibility, meaning/pronunciation language and pronunciation visibility. The tracker and Library reader no longer expose size or meaning controls in the reading area. Arabic remains visible when a Library meaning is enabled. The existing `defaultMeaning` preference is reused so users have a single meaning-visibility setting; no progress migration or storage key change is needed. Quran readings continue in Arabic-only mode.
+
+## Reader simplification
+
+The dashboard preview notice, inline evidence notes and reader evidence disclosure have been removed from the reading experience at the user's request. Full source metadata and review notes remain in the versioned content dataset and this report. Required Tanzil source attribution and its license link are available in Settings. Remaining editorial draft notices still accompany optional draft meanings and pronunciation guides.
+
+## Arabic-first tracker display
+
+All tracker reading screens omit translations, inline editorial review notices and the evidence disclosure. Source/review data remains in the versioned dataset. Optional pronunciation remains controlled by Settings; the meaning visibility preference now applies only to Library readings and is labeled accordingly. Tanzil attribution and licensing remain in Settings.

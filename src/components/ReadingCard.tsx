@@ -1,18 +1,8 @@
-import {
-  Bookmark,
-  Check,
-  CheckCheck,
-  ExternalLink,
-  Minus,
-  Plus,
-  RotateCcw,
-  BookOpen,
-} from 'lucide-react';
+import { Bookmark, Check, CheckCheck, ExternalLink, RotateCcw, BookOpen } from 'lucide-react';
 import type { AppState, Entry, Language } from '../lib/schema';
 import type { Translate } from '../lib/i18n';
 import { countFor, increment, setCount } from '../lib/model';
 import { updateState } from '../lib/store';
-import { useState } from 'react';
 import { AudioPlayer } from './AudioPlayer';
 import { useVerseAudio } from '../hooks/useVerseAudio';
 import { arabicWords } from '../lib/audio';
@@ -24,16 +14,12 @@ interface Props {
   onToast: (message: string, action?: () => void) => void;
 }
 export function ReadingCard({ entry, state, day, t, onToast }: Props) {
-  const [meaning, setMeaning] = useState(state.defaultMeaning);
   const custom = entry.id.startsWith('custom-');
   const audio = useVerseAudio(entry.recitation, state);
   const words = arabicWords(entry.arabic);
   const segment = entry.recitation?.segments[audio.activeSegment];
   const count = countFor(state, entry.id, day);
   const isSaved = state.bookmarks.includes(entry.id);
-  function changeSize(delta: number) {
-    updateState((s) => ({ ...s, fontSize: Math.max(22, Math.min(64, s.fontSize + delta)) }));
-  }
   function bookmark() {
     updateState((s) => ({
       ...s,
@@ -67,45 +53,6 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           <Bookmark size={20} fill={isSaved ? 'currentColor' : 'none'} />
         </button>
       </div>
-      <div className="reading-toolbar">
-        <div className="segmented" role="group" aria-label={t('reading')}>
-          <button
-            aria-pressed={!meaning}
-            className={!meaning ? 'selected' : ''}
-            onClick={() => setMeaning(false)}
-          >
-            {t('arabic')}
-          </button>
-          <button
-            aria-pressed={meaning}
-            className={meaning ? 'selected' : ''}
-            onClick={() => setMeaning(true)}
-          >
-            {t('meaning')}
-          </button>
-        </div>
-        <div className="font-controls">
-          <button
-            className="icon-button"
-            aria-label={t('smaller')}
-            disabled={state.fontSize <= 22}
-            onClick={() => changeSize(-2)}
-          >
-            <span className="font-a small">A</span>
-            <Minus size={9} />
-          </button>
-          <span className="font-divider" />
-          <button
-            className="icon-button"
-            aria-label={t('larger')}
-            disabled={state.fontSize >= 64}
-            onClick={() => changeSize(2)}
-          >
-            <span className="font-a">A</span>
-            <Plus size={9} />
-          </button>
-        </div>
-      </div>
       {entry.recitation && (
         <AudioPlayer
           audio={audio}
@@ -115,54 +62,49 @@ export function ReadingCard({ entry, state, day, t, onToast }: Props) {
           t={t}
         />
       )}
-      {meaning && entry.recitation && audio.playing && (
-        <p className="audio-meaning-hint">{t('audioArabicHint')}</p>
-      )}
       <div className="verse-body">
-        {!meaning && !custom && (
+        {!custom && (
           <div className="bismillah" dir="rtl" lang="ar">
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </div>
         )}
         <div
-          className={meaning ? 'meaning-text' : 'arabic-text'}
-          lang={meaning ? state.lang : 'ar'}
-          dir={meaning ? (state.lang === 'ar' ? 'rtl' : 'ltr') : 'rtl'}
-          style={{
-            fontSize: meaning
-              ? `${Math.max(17, Math.round(state.fontSize * 0.6))}px`
-              : `${state.fontSize}px`,
-          }}
+          className="arabic-text"
+          lang="ar"
+          dir="rtl"
+          style={{ fontSize: `${state.fontSize}px` }}
         >
-          {meaning
-            ? meaningText || t('noMeaning')
-            : entry.recitation
-              ? words.map((word, index) => (
-                  <span key={index}>
-                    <span
-                      className={`verse-word ${segment && index >= segment[0] && index < segment[1] ? 'is-current' : ''}`}
-                      aria-current={
-                        segment && index >= segment[0] && index < segment[1] ? 'true' : undefined
-                      }
-                      data-word={index}
-                    >
-                      {word}
-                    </span>
-                    {index < words.length - 1 ? ' ' : ''}
+          {entry.recitation
+            ? words.map((word, index) => (
+                <span key={index}>
+                  <span
+                    className={`verse-word ${segment && index >= segment[0] && index < segment[1] ? 'is-current' : ''}`}
+                    aria-current={
+                      segment && index >= segment[0] && index < segment[1] ? 'true' : undefined
+                    }
+                    data-word={index}
+                  >
+                    {word}
                   </span>
-                ))
-              : entry.arabic}
+                  {index < words.length - 1 ? ' ' : ''}
+                </span>
+              ))
+            : entry.arabic}
         </div>
-        {meaning ? (
-          <p className="meaning-note">{t('meaningNote')}</p>
-        ) : (
-          !custom && (
-            <div className="verse-flourish" aria-hidden="true">
-              <span />
-              <span className="verse-number">٢٥٥</span>
-              <span />
-            </div>
-          )
+        {!custom && (
+          <div className="verse-flourish" aria-hidden="true">
+            <span />
+            <span className="verse-number">٢٥٥</span>
+            <span />
+          </div>
+        )}
+        {state.defaultMeaning && meaningText && (
+          <>
+            <p className="meaning-text" lang={state.lang} dir={state.lang === 'ar' ? 'rtl' : 'ltr'}>
+              {meaningText}
+            </p>
+            <p className="meaning-note">{t('meaningNote')}</p>
+          </>
         )}
       </div>
       {!custom && (
